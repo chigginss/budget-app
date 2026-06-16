@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { upload, post } from '../api/client'
 
-const CATEGORIES = ['general', 'shopping', 'food', 'bills', 'rent', 'travel', 'gifts']
+const CATEGORIES = ['general', 'shopping', 'food', 'bills', 'rent', 'travel', 'gifts', 'entertainment', 'health']
 
 export default function OcrReview({ monthId, onSaved }) {
   const [file, setFile] = useState(null)
