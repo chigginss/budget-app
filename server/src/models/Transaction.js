@@ -5,7 +5,7 @@ const TransactionSchema = new mongoose.Schema({
   name: { type: String, required: true },
   category: { type: String, enum: CATEGORIES, default: 'general' },
   currency: { type: String, enum: ['NZD', 'USD'], required: true },
-  value: { type: Number, required: true, min: 0 },
+  value: { type: Number, required: true },
   date: { type: Date, required: true },
   month: { type: mongoose.Schema.Types.ObjectId, ref: 'Month', required: true, index: true },
 }, { timestamps: true })

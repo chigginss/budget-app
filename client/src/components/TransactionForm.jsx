@@ -33,7 +33,7 @@ export default function TransactionForm({ monthId, onSaved }) {
         <option value="NZD">NZD</option>
         <option value="USD">USD</option>
       </select>
-      <input required type="number" step="0.01" min="0" placeholder="Amount" value={form.value}
+      <input required type="number" step="0.01" placeholder="Amount" value={form.value}
         onChange={e => set('value', e.target.value)}
         className="border rounded px-3 py-2 text-sm w-28" />
       <input required type="date" value={form.date} onChange={e => set('date', e.target.value)}

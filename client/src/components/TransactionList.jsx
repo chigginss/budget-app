@@ -61,8 +61,12 @@ export default function TransactionList({ transactions, exchangeRate, onUpdate }
                 </select>
               </td>
               <td className="py-2 pr-2 text-gray-500">{new Date(t.date).toLocaleDateString()}</td>
-              <td className="py-2 pr-2 text-right">{t.value.toFixed(2)} {t.currency}</td>
-              <td className="py-2 pr-2 text-right font-medium">${nzd(t)}</td>
+              <td className={`py-2 pr-2 text-right ${t.value < 0 ? 'text-green-600' : ''}`}>
+                {t.value < 0 ? '+' : ''}{Math.abs(t.value).toFixed(2)} {t.currency}
+              </td>
+              <td className={`py-2 pr-2 text-right font-medium ${t.value < 0 ? 'text-green-600' : ''}`}>
+                {t.value < 0 ? '+' : ''}${Math.abs(parseFloat(nzd(t))).toFixed(2)}
+              </td>
               <td className="py-2 text-right">
                 <button onClick={() => remove(t._id)} className="text-red-400 hover:text-red-600 text-xs">Delete</button>
               </td>
