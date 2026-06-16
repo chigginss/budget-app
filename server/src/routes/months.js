@@ -25,6 +25,20 @@ router.get('/ledger-averages', async (req, res, next) => {
   } catch (err) { next(err) }
 })
 
+router.get('/spending-summary', async (req, res, next) => {
+  try {
+    const months = await Month.find()
+    const summary = {}
+    for (const month of months) {
+      const txns = await Transaction.find({ month: month._id })
+      const total = txns.reduce((sum, t) => sum + t.valueInNZD(month.exchangeRate), 0)
+      const key = `${month.startDate.getFullYear()}-${String(month.startDate.getMonth() + 1).padStart(2, '0')}`
+      summary[key] = total
+    }
+    res.json(summary)
+  } catch (err) { next(err) }
+})
+
 router.get('/', async (req, res, next) => {
   try {
     const months = await Month.find().sort({ startDate: -1 })

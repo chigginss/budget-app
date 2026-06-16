@@ -15,8 +15,6 @@ function generateMonths() {
   })
 }
 
-// PUT /api/forecast/months/:index must come before GET /api/forecast/ to avoid routing conflicts
-// We register it on the router before the generic routes
 router.put('/months/:index', async (req, res, next) => {
   try {
     const settings = await ForecastSettings.findOne()
@@ -42,8 +40,9 @@ router.put('/', async (req, res, next) => {
   try {
     let settings = await ForecastSettings.findOne()
     if (!settings) settings = new ForecastSettings({ months: generateMonths() })
-    const { income, fixedCosts } = req.body
+    const { income, currentBalance, fixedCosts } = req.body
     if (income !== undefined) settings.income = income
+    if (currentBalance !== undefined) settings.currentBalance = currentBalance
     if (fixedCosts !== undefined) settings.fixedCosts = fixedCosts
     await settings.save()
     res.json(settings)

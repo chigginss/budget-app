@@ -7,9 +7,15 @@ const ForecastMonthSchema = new mongoose.Schema({
   unexpectedCosts: { type: Number, default: 0 },
 })
 
+const FixedCostSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  amount: { type: Number, required: true },
+})
+
 const ForecastSettingsSchema = new mongoose.Schema({
   income: { type: Number, default: 0 },
-  fixedCosts: { type: Number, default: 0 },
+  currentBalance: { type: Number, default: 0 },
+  fixedCosts: { type: [FixedCostSchema], default: [] },
   months: [ForecastMonthSchema],
 }, { timestamps: true })
 
