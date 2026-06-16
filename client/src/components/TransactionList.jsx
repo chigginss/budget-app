@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { put, del } from '../api/client'
 
-const CATEGORIES = ['general', 'shopping', 'food', 'bills', 'rent', 'travel', 'gifts']
+const CATEGORIES = ['general', 'shopping', 'food', 'bills', 'rent', 'travel', 'gifts', 'entertainment', 'health']
 
 export default function TransactionList({ transactions, exchangeRate, onUpdate }) {
   const [editId, setEditId] = useState(null)

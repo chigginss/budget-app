@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { post } from '../api/client'
 
-const CATEGORIES = ['general', 'shopping', 'food', 'bills', 'rent', 'travel', 'gifts']
+const CATEGORIES = ['general', 'shopping', 'food', 'bills', 'rent', 'travel', 'gifts', 'entertainment', 'health']
 
 export default function TransactionForm({ monthId, onSaved }) {
   const empty = { name: '', category: 'general', currency: 'NZD', value: '', date: new Date().toISOString().split('T')[0] }
