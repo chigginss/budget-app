@@ -10,7 +10,7 @@ function generateMonths() {
       index: i,
       label: d.toLocaleString('default', { month: 'long', year: 'numeric' }),
       date: d,
-      unexpectedCosts: 0,
+      variableCosts: [],
     }
   })
 }
@@ -22,7 +22,7 @@ router.put('/months/:index', async (req, res, next) => {
     const idx = parseInt(req.params.index)
     const month = settings.months.find(m => m.index === idx)
     if (!month) return res.status(404).json({ error: 'Month not found' })
-    month.unexpectedCosts = req.body.unexpectedCosts ?? month.unexpectedCosts
+    if (req.body.variableCosts !== undefined) month.variableCosts = req.body.variableCosts
     await settings.save()
     res.json(settings)
   } catch (err) { next(err) }

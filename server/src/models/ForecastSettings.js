@@ -4,7 +4,7 @@ const ForecastMonthSchema = new mongoose.Schema({
   index: { type: Number, required: true },
   label: { type: String, required: true },
   date: { type: Date, required: true },
-  unexpectedCosts: { type: Number, default: 0 },
+  variableCosts: { type: [{ name: String, amount: Number }], default: [] },
 })
 
 const FixedCostSchema = new mongoose.Schema({
