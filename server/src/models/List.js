@@ -5,7 +5,7 @@ const ListSchema = new mongoose.Schema({
   description: { type: String, default: '' },
   type: {
     type: String,
-    enum: ['todo', 'toBuy', 'longTermPlan', 'custom'],
+    enum: ['todo', 'toBuy', 'longTermPlan', 'custom', 'ideas'],
     default: 'custom',
   },
   savingGoal: { type: Number },

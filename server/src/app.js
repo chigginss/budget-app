@@ -10,6 +10,7 @@ app.use('/api/months', require('./routes/months'))
 app.use('/api/transactions', require('./routes/transactions'))
 app.use('/api/lists', require('./routes/lists'))
 app.use('/api/items', require('./routes/items'))
+app.use('/api/ideas', require('./routes/ideas'))
 app.use('/api/forecast', require('./routes/forecast'))
 
 app.use(errorHandler)
