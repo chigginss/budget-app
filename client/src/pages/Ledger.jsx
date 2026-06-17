@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { get, post } from '../api/client'
+import { get, post, del } from '../api/client'
 import TransactionList from '../components/TransactionList'
 import TransactionForm from '../components/TransactionForm'
 import OcrReview from '../components/OcrReview'
@@ -35,6 +35,17 @@ export default function Ledger() {
     setActiveId(month._id)
     setShowAddMonth(false)
     setNewMonth({ name: '', startDate: '', endDate: '', exchangeRate: 1.65 })
+  }
+
+  const deleteDuration = async (id) => {
+    if (!confirm('Delete this duration and all its transactions?')) return
+    await del(`/months/${id}`)
+    const remaining = months.filter(m => m._id !== id)
+    setMonths(remaining)
+    if (activeId === id) {
+      setActiveId(remaining[0]?._id || null)
+      setMonthData(null)
+    }
   }
 
   const onTransactionSaved = () => {
@@ -91,13 +102,17 @@ export default function Ledger() {
             <div className="text-xs font-semibold text-gray-400 uppercase mb-1">{year}</div>
             <div className="flex flex-wrap gap-2">
               {grouped[year].map(m => (
-                <button
-                  key={m._id}
-                  onClick={() => setActiveId(m._id)}
-                  className={`px-4 py-2 rounded text-sm border ${activeId === m._id ? 'bg-gray-800 text-white border-gray-800' : 'border-gray-300 hover:bg-gray-50'}`}
-                >
-                  {m.name}
-                </button>
+                <div key={m._id} className={`flex items-center rounded text-sm border ${activeId === m._id ? 'bg-gray-800 text-white border-gray-800' : 'border-gray-300'}`}>
+                  <button onClick={() => setActiveId(m._id)} className="px-4 py-2">
+                    {m.name}
+                  </button>
+                  <button
+                    onClick={() => deleteDuration(m._id)}
+                    className={`pr-3 pl-1 py-2 ${activeId === m._id ? 'text-gray-400 hover:text-white' : 'text-gray-300 hover:text-red-500'}`}
+                  >
+                    ✕
+                  </button>
+                </div>
               ))}
             </div>
           </div>
