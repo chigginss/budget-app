@@ -23,6 +23,7 @@ router.put('/months/:index', async (req, res, next) => {
     const month = settings.months.find(m => m.index === idx)
     if (!month) return res.status(404).json({ error: 'Month not found' })
     if (req.body.variableCosts !== undefined) month.variableCosts = req.body.variableCosts
+    settings.markModified('months')
     await settings.save()
     res.json(settings)
   } catch (err) { next(err) }
