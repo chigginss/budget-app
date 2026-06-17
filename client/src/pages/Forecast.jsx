@@ -4,13 +4,16 @@ import { get, put } from '../api/client'
 
 export default function Forecast() {
   const [settings, setSettings] = useState(null)
+  const [durations, setDurations] = useState([])
   const [fixedOpen, setFixedOpen] = useState(false)
   const [newCost, setNewCost] = useState({ name: '', amount: '' })
   const [expandedMonth, setExpandedMonth] = useState(null)
   const [newVariableCost, setNewVariableCost] = useState({ name: '', amount: '' })
+  const [importId, setImportId] = useState('')
 
   useEffect(() => {
     get('/forecast').then(setSettings).catch(console.error)
+    get('/months').then(setDurations).catch(console.error)
   }, [])
 
   const saveSettings = async (patch) => {
@@ -47,6 +50,18 @@ export default function Forecast() {
     const month = settings.months.find(m => m.index === monthIndex)
     const updated = (month.variableCosts || []).filter((_, i) => i !== costIndex)
     await updateMonthVariableCosts(monthIndex, updated)
+  }
+
+  const importFromDuration = async (monthIndex) => {
+    if (!importId) return
+    const duration = await get(`/months/${importId}`)
+    const total = (duration.transactions || []).reduce((sum, t) => {
+      return sum + (t.currency === 'USD' ? t.value * duration.exchangeRate : t.value)
+    }, 0)
+    const month = settings.months.find(m => m.index === monthIndex)
+    const updated = [...(month.variableCosts || []), { name: duration.name, amount: parseFloat(total.toFixed(2)) }]
+    await updateMonthVariableCosts(monthIndex, updated)
+    setImportId('')
   }
 
   if (!settings) return <div className="p-6 text-gray-500">Loading...</div>
@@ -181,6 +196,19 @@ export default function Forecast() {
                           + Add
                         </button>
                       </div>
+                      {durations.length > 0 && (
+                        <div className="flex gap-2 mt-2 pt-2 border-t border-gray-200" onClick={e => e.stopPropagation()}>
+                          <select value={importId} onChange={e => setImportId(e.target.value)}
+                            className="border rounded px-3 py-2 text-sm flex-1 text-gray-600">
+                            <option value="">Import total from duration...</option>
+                            {durations.map(d => <option key={d._id} value={d._id}>{d.name}</option>)}
+                          </select>
+                          <button onClick={() => importFromDuration(m.index)} disabled={!importId}
+                            className="border border-gray-300 px-4 py-2 rounded text-sm hover:bg-gray-100 disabled:opacity-40">
+                            Import
+                          </button>
+                        </div>
+                      )}
                     </td>
                   </tr>
                 )}
