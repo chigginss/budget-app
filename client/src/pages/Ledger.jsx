@@ -58,13 +58,13 @@ export default function Ledger() {
           onClick={() => setShowAddMonth(!showAddMonth)}
           className="bg-gray-800 text-white px-4 py-2 rounded text-sm hover:bg-gray-700"
         >
-          + Add Month
+          + Add Duration
         </button>
       </div>
 
       {showAddMonth && (
         <form onSubmit={addMonth} className="border border-gray-200 rounded-lg p-4 mb-6 grid grid-cols-2 gap-3">
-          <input required placeholder="Name (e.g. June 2026)" value={newMonth.name}
+          <input required placeholder="Name (e.g. June 2026 or Bali Trip)" value={newMonth.name}
             onChange={e => setNewMonth(p => ({ ...p, name: e.target.value }))}
             className="border rounded px-3 py-2 text-sm col-span-2" />
           <input required type="date" value={newMonth.startDate}
@@ -144,7 +144,7 @@ export default function Ledger() {
       )}
 
       {!months.length && (
-        <p className="text-gray-500 text-sm">No months yet. Add one to get started.</p>
+        <p className="text-gray-500 text-sm">No durations yet. Add one to get started.</p>
       )}
     </div>
   )
