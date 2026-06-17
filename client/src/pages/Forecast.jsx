@@ -67,11 +67,11 @@ export default function Forecast() {
   if (!settings) return <div className="p-6 text-gray-500">Loading...</div>
 
   const { income, currentBalance, fixedCosts, months } = settings
-  const fixedCostsTotal = (fixedCosts || []).reduce((s, c) => s + c.amount, 0)
+  const fixedCostsTotal = (fixedCosts || []).reduce((s, c) => s + (c.amount || 0), 0)
 
   const monthsWithBalance = months.reduce((acc, m) => {
     const prevBalance = acc.length === 0 ? (currentBalance || 0) : acc[acc.length - 1].balance
-    const variableCostsTotal = (m.variableCosts || []).reduce((s, c) => s + c.amount, 0)
+    const variableCostsTotal = (m.variableCosts || []).reduce((s, c) => s + (c.amount || 0), 0)
     const net = (income || 0) - fixedCostsTotal - variableCostsTotal
     acc.push({ ...m, variableCostsTotal, net, balance: prevBalance + net })
     return acc

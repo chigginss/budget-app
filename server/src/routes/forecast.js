@@ -33,6 +33,12 @@ router.get('/', async (req, res, next) => {
   try {
     let settings = await ForecastSettings.findOne()
     if (!settings) settings = await ForecastSettings.create({ months: generateMonths() })
+    // Strip any fixedCosts entries that lack a valid amount (legacy schema migration)
+    const cleaned = settings.fixedCosts.filter(c => c && typeof c.amount === 'number' && !isNaN(c.amount))
+    if (cleaned.length !== settings.fixedCosts.length) {
+      settings.fixedCosts = cleaned
+      await settings.save()
+    }
     res.json(settings)
   } catch (err) { next(err) }
 })
