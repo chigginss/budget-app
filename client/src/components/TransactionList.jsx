@@ -60,7 +60,7 @@ export default function TransactionList({ transactions, exchangeRate, onUpdate }
                   {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
               </td>
-              <td className="py-2 pr-2 text-gray-500">{new Date(t.date).toLocaleDateString()}</td>
+              <td className="py-2 pr-2 text-gray-500">{t.date ? new Date(t.date).toLocaleDateString() : '—'}</td>
               <td className={`py-2 pr-2 text-right ${t.value < 0 ? 'text-green-600' : ''}`}>
                 {t.value < 0 ? '+' : ''}{Math.abs(t.value).toFixed(2)} {t.currency}
               </td>
