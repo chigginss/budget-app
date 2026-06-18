@@ -1,4 +1,6 @@
-const BASE = (import.meta.env.VITE_API_URL || '') + '/api'
+const BASE = import.meta.env.PROD
+  ? 'https://budget-app-api.onrender.com/api'
+  : '/api'
 
 function authHeader() {
   const password = sessionStorage.getItem('auth_password')
