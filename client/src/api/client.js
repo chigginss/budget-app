@@ -1,5 +1,5 @@
 const BASE = import.meta.env.PROD
-  ? 'https://budget-app-api.onrender.com/api'
+  ? 'https://budget-app-qiv4.onrender.com/api'
   : '/api'
 
 function authHeader() {
