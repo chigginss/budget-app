@@ -69,7 +69,23 @@ export default function Dashboard() {
         </div>
       )}
 
-      <h2 className="text-xl font-semibold mb-1 text-gray-800">What's next?</h2>
+      <h2 className="text-xl font-semibold mb-3 text-gray-800">What's next?</h2>
+      <div className="flex gap-2 max-w-sm mb-5">
+        <input
+          value={newName}
+          onChange={e => setNewName(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && createList()}
+          placeholder="New list name..."
+          className="border border-indigo-300 rounded px-3 py-2 flex-1 text-sm"
+        />
+        <button
+          onClick={createList}
+          className="bg-indigo-600 text-white px-4 py-2 rounded text-sm hover:bg-indigo-700"
+        >
+          + New List
+        </button>
+      </div>
+
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
         {customLists.map(list => (
           <div key={list._id} className="relative border border-indigo-200 rounded-lg p-4">
@@ -84,22 +100,6 @@ export default function Dashboard() {
             </button>
           </div>
         ))}
-      </div>
-
-      <div className="flex gap-2 max-w-sm">
-        <input
-          value={newName}
-          onChange={e => setNewName(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && createList()}
-          placeholder="New list name..."
-          className="border border-indigo-300 rounded px-3 py-2 flex-1 text-sm"
-        />
-        <button
-          onClick={createList}
-          className="bg-indigo-600 text-white px-4 py-2 rounded text-sm hover:bg-indigo-700"
-        >
-          + New List
-        </button>
       </div>
     </div>
   )

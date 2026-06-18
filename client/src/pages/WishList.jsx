@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { get, post, del } from '../api/client'
+import { get, post, put, del } from '../api/client'
 
 export default function WishList() {
   const [list, setList] = useState(null)
   const [newItem, setNewItem] = useState('')
+  const [draggedId, setDraggedId] = useState(null)
 
   const load = () =>
     get('/lists?type=toBuy').then(lists => {
@@ -26,6 +27,19 @@ export default function WishList() {
     load()
   }
 
+  const handleDrop = async (targetId) => {
+    if (!draggedId || draggedId === targetId || !list) return
+    const items = [...(list.items || [])]
+    const fromIdx = items.findIndex(i => i._id === draggedId)
+    const toIdx = items.findIndex(i => i._id === targetId)
+    const [moved] = items.splice(fromIdx, 1)
+    items.splice(toIdx, 0, moved)
+    const withOrder = items.map((item, idx) => ({ ...item, order: idx }))
+    setList(prev => ({ ...prev, items: withOrder }))
+    setDraggedId(null)
+    await put(`/lists/${list._id}/reorder`, withOrder.map(({ _id, order }) => ({ id: _id, order })))
+  }
+
   return (
     <div className="max-w-2xl mx-auto p-6">
       <Link to="/" className="text-sm text-gray-500 hover:text-gray-800 mb-6 inline-block">← Dashboard</Link>
@@ -43,7 +57,14 @@ export default function WishList() {
         </button>
       </div>
       {list?.items?.map(item => (
-        <div key={item._id} className="flex items-center justify-between py-2 border-b last:border-0">
+        <div
+          key={item._id}
+          draggable
+          onDragStart={() => setDraggedId(item._id)}
+          onDragOver={e => e.preventDefault()}
+          onDrop={() => handleDrop(item._id)}
+          className="flex items-center justify-between py-2 border-b border-indigo-100 last:border-0 cursor-grab active:cursor-grabbing"
+        >
           <span className="text-gray-800">{item.name}</span>
           <button onClick={() => remove(item._id)} className="text-xs text-red-400 hover:text-red-600">Delete</button>
         </div>

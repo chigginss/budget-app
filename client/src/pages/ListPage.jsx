@@ -6,6 +6,7 @@ export default function ListPage() {
   const { id } = useParams()
   const [list, setList] = useState(null)
   const [newItem, setNewItem] = useState('')
+  const [draggedId, setDraggedId] = useState(null)
 
   const load = () => get(`/lists/${id}`).then(setList).catch(console.error)
 
@@ -26,6 +27,19 @@ export default function ListPage() {
   const remove = async (itemId) => {
     await del(`/items/${itemId}`)
     load()
+  }
+
+  const handleDrop = async (targetId) => {
+    if (!draggedId || draggedId === targetId || !list) return
+    const items = [...(list.items || [])]
+    const fromIdx = items.findIndex(i => i._id === draggedId)
+    const toIdx = items.findIndex(i => i._id === targetId)
+    const [moved] = items.splice(fromIdx, 1)
+    items.splice(toIdx, 0, moved)
+    const withOrder = items.map((item, idx) => ({ ...item, order: idx }))
+    setList(prev => ({ ...prev, items: withOrder }))
+    setDraggedId(null)
+    await put(`/lists/${id}/reorder`, withOrder.map(({ _id, order }) => ({ id: _id, order })))
   }
 
   if (!list) return <div className="p-6 text-gray-500">Loading...</div>
@@ -50,7 +64,14 @@ export default function ListPage() {
       </div>
 
       {list.items?.map(item => (
-        <div key={item._id} className="flex items-center gap-3 py-2 border-b last:border-0">
+        <div
+          key={item._id}
+          draggable
+          onDragStart={() => setDraggedId(item._id)}
+          onDragOver={e => e.preventDefault()}
+          onDrop={() => handleDrop(item._id)}
+          className="flex items-center gap-3 py-2 border-b border-indigo-100 last:border-0 cursor-grab active:cursor-grabbing"
+        >
           <input type="checkbox" checked={item.status === 'completed'} onChange={() => toggle(item)} />
           <span className={`flex-1 ${item.status === 'completed' ? 'line-through text-gray-400' : 'text-gray-800'}`}>
             {item.name}

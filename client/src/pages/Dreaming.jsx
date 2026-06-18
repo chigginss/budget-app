@@ -10,6 +10,7 @@ export default function Dreaming() {
   const [goal, setGoal] = useState({ savingGoal: '', goalDate: '' })
   const [editingId, setEditingId] = useState(null)
   const [editingText, setEditingText] = useState('')
+  const [draggedId, setDraggedId] = useState(null)
 
   const load = () =>
     get('/lists?type=longTermPlan').then(lists => {
@@ -62,6 +63,19 @@ export default function Dreaming() {
   const cancelEdit = () => {
     setEditingId(null)
     setEditingText('')
+  }
+
+  const handleDrop = async (targetId) => {
+    if (!draggedId || draggedId === targetId || !list) return
+    const items = [...(list.items || [])]
+    const fromIdx = items.findIndex(i => i._id === draggedId)
+    const toIdx = items.findIndex(i => i._id === targetId)
+    const [moved] = items.splice(fromIdx, 1)
+    items.splice(toIdx, 0, moved)
+    const withOrder = items.map((item, idx) => ({ ...item, order: idx }))
+    setList(prev => ({ ...prev, items: withOrder }))
+    setDraggedId(null)
+    await put(`/lists/${list._id}/reorder`, withOrder.map(({ _id, order }) => ({ id: _id, order })))
   }
 
   const projectedByGoalDate = () => {
@@ -127,7 +141,14 @@ export default function Dreaming() {
         </button>
       </div>
       {list?.items?.map(item => (
-        <div key={item._id} className="py-3 border-b border-indigo-100 last:border-0">
+        <div
+          key={item._id}
+          draggable={editingId !== item._id}
+          onDragStart={() => setDraggedId(item._id)}
+          onDragOver={e => e.preventDefault()}
+          onDrop={() => handleDrop(item._id)}
+          className={`py-3 border-b border-indigo-100 last:border-0 ${editingId !== item._id ? 'cursor-grab active:cursor-grabbing' : ''}`}
+        >
           {editingId === item._id ? (
             <div className="flex flex-col gap-2">
               <textarea
