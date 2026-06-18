@@ -1,10 +1,15 @@
 const express = require('express')
 const cors = require('cors')
 const errorHandler = require('./middleware/errorHandler')
+const auth = require('./middleware/auth')
 
 const app = express()
-app.use(cors())
+app.use(cors({
+  origin: [/\.vercel\.app$/, /localhost/],
+  allowedHeaders: ['Content-Type', 'X-App-Password'],
+}))
 app.use(express.json())
+app.use('/api', auth)
 
 app.use('/api/months', require('./routes/months'))
 app.use('/api/transactions', require('./routes/transactions'))
