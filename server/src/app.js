@@ -5,7 +5,7 @@ const auth = require('./middleware/auth')
 
 const app = express()
 app.use(cors({
-  origin: [/\.vercel\.app$/, /localhost/],
+  origin: [/\.vercel\.app$/, /localhost/, /startprojecting\.xyz$/],
   allowedHeaders: ['Content-Type', 'X-App-Password'],
 }))
 app.use(express.json())
