@@ -15,6 +15,7 @@ export default function Ledger() {
   const [showAddMonth, setShowAddMonth] = useState(false)
   const [newMonth, setNewMonth] = useState({ name: '', startDate: '', endDate: '', exchangeRate: 1.65 })
   const [showOcr, setShowOcr] = useState(false)
+  const [showNotes, setShowNotes] = useState(false)
 
   useEffect(() => {
     get('/months').then(data => {
@@ -25,6 +26,7 @@ export default function Ledger() {
 
   useEffect(() => {
     if (!activeId) return
+    setShowNotes(false)
     get(`/months/${activeId}`).then(setMonthData).catch(console.error)
   }, [activeId])
 
@@ -52,7 +54,6 @@ export default function Ledger() {
     get(`/months/${activeId}`).then(setMonthData)
   }
 
-  // Group months by year for display
   const grouped = months.reduce((acc, m) => {
     const year = new Date(m.startDate).getFullYear()
     if (!acc[year]) acc[year] = []
@@ -95,7 +96,7 @@ export default function Ledger() {
         </form>
       )}
 
-      {/* Year/month tabs */}
+      {/* Duration tabs */}
       <div className="mb-6">
         {Object.keys(grouped).sort((a, b) => b - a).map(year => (
           <div key={year} className="mb-2">
@@ -103,15 +104,11 @@ export default function Ledger() {
             <div className="flex flex-wrap gap-2">
               {grouped[year].map(m => (
                 <div key={m._id} className={`flex items-center rounded text-sm border ${activeId === m._id ? 'bg-gray-800 text-white border-gray-800' : 'border-gray-300'}`}>
-                  <button onClick={() => setActiveId(m._id)} className="px-4 py-2">
-                    {m.name}
-                  </button>
+                  <button onClick={() => setActiveId(m._id)} className="px-4 py-2">{m.name}</button>
                   <button
                     onClick={() => deleteDuration(m._id)}
                     className={`pr-3 pl-1 py-2 ${activeId === m._id ? 'text-gray-400 hover:text-white' : 'text-gray-300 hover:text-red-500'}`}
-                  >
-                    ✕
-                  </button>
+                  >✕</button>
                 </div>
               ))}
             </div>
@@ -121,6 +118,31 @@ export default function Ledger() {
 
       {monthData && (
         <>
+          {/* Notes collapsible */}
+          <div className="border border-gray-200 rounded-lg mb-6 overflow-hidden">
+            <button
+              onClick={() => setShowNotes(o => !o)}
+              className="w-full flex justify-between items-center px-5 py-3 bg-gray-50 hover:bg-gray-100 text-left"
+            >
+              <span className="text-sm font-medium text-gray-700">Notes</span>
+              <span className="text-gray-400 text-sm">{showNotes ? '▲' : '▼'}</span>
+            </button>
+            {showNotes && (
+              <div className="p-4 border-t border-gray-200">
+                <NotesField key={activeId} monthId={activeId} initialValue={monthData.details} />
+              </div>
+            )}
+          </div>
+
+          {/* Chart + totals */}
+          {monthData.transactions?.length > 0 && (
+            <div className="grid md:grid-cols-2 gap-6 mb-8">
+              <SpendingChart transactions={monthData.transactions} exchangeRate={monthData.exchangeRate} />
+              <CategoryTotals transactions={monthData.transactions} exchangeRate={monthData.exchangeRate} />
+            </div>
+          )}
+
+          {/* Entry toggle + form */}
           <div className="flex gap-3 mb-4">
             <button
               onClick={() => setShowOcr(false)}
@@ -146,15 +168,6 @@ export default function Ledger() {
             exchangeRate={monthData.exchangeRate}
             onUpdate={onTransactionSaved}
           />
-
-          {monthData.transactions?.length > 0 && (
-            <div className="mt-8 grid md:grid-cols-2 gap-6">
-              <SpendingChart transactions={monthData.transactions} exchangeRate={monthData.exchangeRate} />
-              <CategoryTotals transactions={monthData.transactions} exchangeRate={monthData.exchangeRate} />
-            </div>
-          )}
-
-          <NotesField key={activeId} monthId={activeId} initialValue={monthData.details} />
         </>
       )}
 

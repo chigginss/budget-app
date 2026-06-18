@@ -4,13 +4,15 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 ChartJS.register(ArcElement, Tooltip, Legend)
 
 const COLORS = {
-  shopping: '#6366f1',
+  shopping: '#eab308',
   food: '#22c55e',
   bills: '#f59e0b',
-  rent: '#ef4444',
+  rent: '#8b5cf6',
   travel: '#3b82f6',
   gifts: '#ec4899',
   general: '#9ca3af',
+  entertainment: '#ef4444',
+  health: '#14b8a6',
 }
 
 export default function SpendingChart({ transactions, exchangeRate }) {
