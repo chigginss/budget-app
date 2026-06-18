@@ -178,6 +178,18 @@ export default function Forecast() {
         </div>
       </div>
 
+      <div className="text-sm text-gray-500 mb-3">
+        <span className="font-medium text-gray-700">${(income || 0).toFixed(2)}</span> income
+        {' − '}
+        <span className="font-medium text-gray-700">${fixedCostsTotal.toFixed(2)}</span> fixed
+        {' = '}
+        <span className={`font-semibold ${(income || 0) - fixedCostsTotal >= 0 ? 'text-green-700' : 'text-red-600'}`}>
+          ${((income || 0) - fixedCostsTotal).toFixed(2)}
+        </span>
+        {' base net/month '}
+        <span className="text-gray-400">(± variable costs per month)</span>
+      </div>
+
       {/* Monthly running balance table */}
       <div className="border border-indigo-200 rounded-lg overflow-x-auto">
         <table className="w-full text-sm min-w-[500px]">
