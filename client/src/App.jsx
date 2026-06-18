@@ -5,7 +5,8 @@ import Forecast from './pages/Forecast'
 import FocusList from './pages/FocusList'
 import WishList from './pages/WishList'
 import Dreaming from './pages/Dreaming'
-import ListPage from './pages/ListPage'
+import ListPage from './pages/ListPage' 
+import Blobs from './pages/Blobs'
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
         <Route path="/focus" element={<FocusList />} />
         <Route path="/wishlist" element={<WishList />} />
         <Route path="/dreaming" element={<Dreaming />} />
+        <Route path="/blobs" element={<Blobs />} />
         <Route path="/lists/:id" element={<ListPage />} />
       </Routes>
     </BrowserRouter>
