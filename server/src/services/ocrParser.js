@@ -60,7 +60,7 @@ function parseOcrText(text) {
     results.push({ name, value, date, currency: 'NZD' })
   }
 
-  return results
+  return results.filter(r => r.name.toLowerCase() !== 'unknown' && r.value <= 7000)
 }
 
 module.exports = { parseOcrText }
