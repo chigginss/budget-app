@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { get, post, put, del } from '../api/client'
+import ReactMarkdown from 'react-markdown'
 
 export default function Dreaming() {
   const [list, setList] = useState(null)
   const [forecast, setForecast] = useState(null)
   const [newItem, setNewItem] = useState('')
   const [goal, setGoal] = useState({ savingGoal: '', goalDate: '' })
+  const [editingId, setEditingId] = useState(null)
+  const [editingText, setEditingText] = useState('')
 
   const load = () =>
     get('/lists?type=longTermPlan').then(lists => {
@@ -43,7 +46,24 @@ export default function Dreaming() {
     load()
   }
 
-  // Calculate projected savings by goal date using forecast months
+  const startEdit = (item) => {
+    setEditingId(item._id)
+    setEditingText(item.name)
+  }
+
+  const saveEdit = async (id) => {
+    if (!editingText.trim()) return
+    await put(`/items/${id}`, { name: editingText.trim() })
+    setEditingId(null)
+    setEditingText('')
+    load()
+  }
+
+  const cancelEdit = () => {
+    setEditingId(null)
+    setEditingText('')
+  }
+
   const projectedByGoalDate = () => {
     if (!forecast || !goal.goalDate) return null
     const target = new Date(goal.goalDate)
@@ -62,7 +82,7 @@ export default function Dreaming() {
       <Link to="/" className="text-sm text-gray-500 hover:text-gray-800 mb-6 inline-block">← Dashboard</Link>
       <h1 className="text-3xl font-bold mb-6 text-gray-900">Dreaming</h1>
 
-      <div className="border border-gray-200 rounded-lg p-5 mb-8">
+      <div className="border border-indigo-200 rounded-lg p-5 mb-8">
         <h2 className="font-semibold text-gray-800 mb-3">Saving Goal</h2>
         <div className="grid grid-cols-2 gap-4 mb-3">
           <div>
@@ -70,14 +90,14 @@ export default function Dreaming() {
             <input type="number" step="0.01" value={goal.savingGoal}
               onChange={e => setGoal(p => ({ ...p, savingGoal: e.target.value }))}
               onBlur={saveGoal}
-              className="border rounded px-3 py-2 text-sm w-full" />
+              className="border border-indigo-300 rounded px-3 py-2 text-sm w-full" />
           </div>
           <div>
             <label className="text-sm text-gray-600 block mb-1">Target Date</label>
             <input type="date" value={goal.goalDate}
               onChange={e => setGoal(p => ({ ...p, goalDate: e.target.value }))}
               onBlur={saveGoal}
-              className="border rounded px-3 py-2 text-sm w-full" />
+              className="border border-indigo-300 rounded px-3 py-2 text-sm w-full" />
           </div>
         </div>
         {diff !== null && (
@@ -100,16 +120,47 @@ export default function Dreaming() {
           onChange={e => setNewItem(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && addItem()}
           placeholder="Add a plan or idea..."
-          className="border border-gray-300 rounded px-3 py-2 flex-1 text-sm"
+          className="border border-indigo-300 rounded px-3 py-2 flex-1 text-sm"
         />
-        <button onClick={addItem} className="bg-gray-800 text-white px-4 py-2 rounded text-sm hover:bg-gray-700">
+        <button onClick={addItem} className="bg-indigo-600 text-white px-4 py-2 rounded text-sm hover:bg-indigo-700">
           Add
         </button>
       </div>
       {list?.items?.map(item => (
-        <div key={item._id} className="flex items-center justify-between py-2 border-b last:border-0">
-          <span className="text-gray-800">{item.name}</span>
-          <button onClick={() => remove(item._id)} className="text-xs text-red-400 hover:text-red-600">Delete</button>
+        <div key={item._id} className="py-3 border-b border-indigo-100 last:border-0">
+          {editingId === item._id ? (
+            <div className="flex flex-col gap-2">
+              <textarea
+                value={editingText}
+                onChange={e => setEditingText(e.target.value)}
+                rows={3}
+                className="border border-indigo-300 rounded px-3 py-2 text-sm w-full"
+                autoFocus
+              />
+              <div className="flex gap-2">
+                <button onClick={() => saveEdit(item._id)}
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded text-xs">
+                  Save
+                </button>
+                <button onClick={cancelEdit}
+                  className="border border-indigo-300 px-3 py-1 rounded text-xs hover:bg-indigo-50">
+                  Cancel
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-start justify-between gap-3">
+              <div className="prose prose-sm text-gray-800 flex-1 min-w-0">
+                <ReactMarkdown>{item.name}</ReactMarkdown>
+              </div>
+              <div className="flex gap-2 shrink-0">
+                <button onClick={() => startEdit(item)}
+                  className="text-xs text-indigo-500 hover:text-indigo-700">Edit</button>
+                <button onClick={() => remove(item._id)}
+                  className="text-xs text-red-400 hover:text-red-600">Delete</button>
+              </div>
+            </div>
+          )}
         </div>
       ))}
     </div>
