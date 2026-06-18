@@ -3,6 +3,14 @@ import { Link, useNavigate } from 'react-router-dom'
 import NavCard from '../components/NavCard'
 import { get, post, del } from '../api/client'
 
+const QUOTES = [
+  'All we have to decide is what to do with the time that is given to us.',
+  'I thought the fall would kill me, but it just made me real — Ocean Vuong',
+  'Not everything that is faced can be changed, but nothing can be changed until it is faced. — James Baldwin',
+  'I wouldn\'t change one stupid decision for another five years of life. — James Murphy',
+  'You wanna fly, you got to give up the shit that weighs you down. — Toni Morrison',
+]
+
 const MAIN_PAGES = [
   { label: 'Ledger', path: '/ledger', description: 'Track your spending' },
   { label: 'Forecast', path: '/forecast', description: 'Project your savings' },
@@ -14,11 +22,20 @@ const MAIN_PAGES = [
 
 export default function Dashboard() {
   const [customLists, setCustomLists] = useState([])
+  const [topItem, setTopItem] = useState(null)
   const [newName, setNewName] = useState('')
+  const [quote] = useState(() => QUOTES[Math.floor(Math.random() * QUOTES.length)])
   const navigate = useNavigate()
 
   useEffect(() => {
     get('/lists?type=custom').then(setCustomLists).catch(console.error)
+    get('/lists?type=todo').then(lists => {
+      if (!lists.length) return
+      get(`/lists/${lists[0]._id}`).then(data => {
+        const first = (data.items || []).find(i => i.status === 'pending')
+        setTopItem(first || null)
+      })
+    }).catch(console.error)
   }, [])
 
   const createList = async () => {
@@ -36,13 +53,23 @@ export default function Dashboard() {
 
   return (
     <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-8 text-gray-900">Hi, Cierra</h1>
+      <h1 className="text-3xl font-bold text-gray-900">Hi, Cierra</h1>
+      <p className="text-gray-400 italic text-sm mt-2 mb-10">{quote}</p>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-10">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
         {MAIN_PAGES.map(p => <NavCard key={p.path} {...p} />)}
       </div>
 
-      <h2 className="text-xl font-semibold mb-4 text-gray-800">Custom Lists</h2>
+      {topItem && (
+        <div className="mb-10">
+          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">On today's agenda</h2>
+          <div className="border border-gray-200 rounded-lg px-4 py-3 text-gray-800 font-medium">
+            {topItem.name}
+          </div>
+        </div>
+      )}
+
+      <h2 className="text-xl font-semibold mb-4 text-gray-800">What next?</h2>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
         {customLists.map(list => (
           <div key={list._id} className="relative border border-gray-200 rounded-lg p-4">

@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { get, post, del } from '../api/client'
+import { get, post, put, del } from '../api/client'
 
 export default function Blobs() {
   const [list, setList] = useState(null)
   const [form, setForm] = useState({ title: '', description: '' })
+  const [editId, setEditId] = useState(null)
+  const [editForm, setEditForm] = useState({ title: '', description: '' })
 
   const load = () =>
     get('/lists?type=ideas').then(lists => {
@@ -26,6 +28,18 @@ export default function Blobs() {
     load()
   }
 
+  const startEdit = (idea) => {
+    setEditId(idea._id)
+    setEditForm({ title: idea.title, description: idea.description || '' })
+  }
+
+  const saveEdit = async () => {
+    if (!editForm.title.trim()) return
+    await put(`/ideas/${editId}`, { title: editForm.title.trim(), description: editForm.description.trim() })
+    setEditId(null)
+    load()
+  }
+
   return (
     <div className="max-w-2xl mx-auto p-6">
       <Link to="/" className="text-sm text-gray-500 hover:text-gray-800 mb-6 inline-block">← Dashboard</Link>
@@ -37,7 +51,7 @@ export default function Blobs() {
             placeholder="Title"
             value={form.title}
             onChange={e => setForm(p => ({ ...p, title: e.target.value }))}
-            onKeyDown={e => e.key === 'Enter' && e.shiftKey === false && addIdea()}
+            onKeyDown={e => e.key === 'Enter' && !e.shiftKey && addIdea()}
             className="border rounded px-3 py-2 text-sm w-full mb-2"
           />
           <textarea
@@ -48,10 +62,7 @@ export default function Blobs() {
             className="border rounded px-3 py-2 text-sm w-full resize-y"
           />
         </div>
-        <button
-          onClick={addIdea}
-          className="bg-gray-800 text-white px-4 py-2 rounded text-sm hover:bg-gray-700"
-        >
+        <button onClick={addIdea} className="bg-gray-800 text-white px-4 py-2 rounded text-sm hover:bg-gray-700">
           + Add
         </button>
       </div>
@@ -59,17 +70,38 @@ export default function Blobs() {
       <div className="space-y-4">
         {(list?.ideas || []).map(idea => (
           <div key={idea._id} className="border border-gray-200 rounded-lg p-5">
-            <div className="flex justify-between items-start gap-4">
-              <h3 className="font-semibold text-gray-900">{idea.title}</h3>
-              <button
-                onClick={() => remove(idea._id)}
-                className="text-xs text-gray-400 hover:text-red-500 shrink-0"
-              >
-                Delete
-              </button>
-            </div>
-            {idea.description && (
-              <p className="mt-2 text-sm text-gray-600 whitespace-pre-wrap">{idea.description}</p>
+            {editId === idea._id ? (
+              <>
+                <input
+                  autoFocus
+                  value={editForm.title}
+                  onChange={e => setEditForm(p => ({ ...p, title: e.target.value }))}
+                  className="border rounded px-3 py-2 text-sm w-full mb-2 font-semibold"
+                />
+                <textarea
+                  value={editForm.description}
+                  onChange={e => setEditForm(p => ({ ...p, description: e.target.value }))}
+                  rows={4}
+                  className="border rounded px-3 py-2 text-sm w-full resize-y mb-3"
+                />
+                <div className="flex gap-2">
+                  <button onClick={saveEdit} className="bg-gray-800 text-white px-3 py-1 rounded text-xs hover:bg-gray-700">Save</button>
+                  <button onClick={() => setEditId(null)} className="border px-3 py-1 rounded text-xs text-gray-600">Cancel</button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="flex justify-between items-start gap-4">
+                  <h3 className="font-semibold text-gray-900">{idea.title}</h3>
+                  <div className="flex gap-3 shrink-0">
+                    <button onClick={() => startEdit(idea)} className="text-xs text-gray-400 hover:text-gray-700">Edit</button>
+                    <button onClick={() => remove(idea._id)} className="text-xs text-gray-400 hover:text-red-500">Delete</button>
+                  </div>
+                </div>
+                {idea.description && (
+                  <p className="mt-2 text-sm text-gray-600 whitespace-pre-wrap">{idea.description}</p>
+                )}
+              </>
             )}
           </div>
         ))}
