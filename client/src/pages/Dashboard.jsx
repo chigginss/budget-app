@@ -53,7 +53,7 @@ export default function Dashboard() {
 
   return (
     <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-3xl font-bold text-gray-900">Hi, Cierra</h1>
+      <h1 className="text-3xl font-bold mb-3 text-gray-900">Hi, Cierra!</h1>
       <p className="text-gray-400 italic text-sm mt-2 mb-10">{quote}</p>
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
@@ -61,15 +61,15 @@ export default function Dashboard() {
       </div>
 
       {topItem && (
-        <div className="mb-10">
+        <div className="mb-6">
           <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">On today's agenda</h2>
-          <div className="border border-gray-200 rounded-lg px-4 py-3 text-gray-800 font-medium">
+          <div className="bg-gray-800 border border-gray-200 rounded-lg px-4 text-white py-3 font-medium">
             {topItem.name}
           </div>
         </div>
       )}
 
-      <h2 className="text-xl font-semibold mb-4 text-gray-800">What next?</h2>
+      <h2 className="text-xl font-semibold mb-1 text-gray-800">What's next?</h2>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
         {customLists.map(list => (
           <div key={list._id} className="relative border border-gray-200 rounded-lg p-4">
