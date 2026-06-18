@@ -34,7 +34,7 @@ export default function TransactionList({ transactions, exchangeRate, onUpdate }
     <div className="overflow-x-auto mb-4">
       <table className="w-full text-sm border-collapse">
         <thead>
-          <tr className="text-left text-gray-500 border-b">
+          <tr className="text-left text-gray-500 border-b border-indigo-200">
             <th className="pb-2 font-medium">Merchant</th>
             <th className="pb-2 font-medium">Category</th>
             <th className="pb-2 font-medium">Date</th>
@@ -45,18 +45,18 @@ export default function TransactionList({ transactions, exchangeRate, onUpdate }
         </thead>
         <tbody>
           {transactions.map(t => (
-            <tr key={t._id} className="border-b last:border-0">
+            <tr key={t._id} className="border-b border-indigo-100 last:border-0">
               <td className="py-2 pr-2">
                 {editId === t._id
                   ? <input autoFocus value={editName} onChange={e => setEditName(e.target.value)}
                       onBlur={() => saveEdit(t)} onKeyDown={e => e.key === 'Enter' && saveEdit(t)}
-                      className="border rounded px-2 py-1 text-sm w-full" />
+                      className="border border-indigo-300 rounded px-2 py-1 text-sm w-full" />
                   : <button onClick={() => startEdit(t)} className="text-left hover:underline">{t.name}</button>
                 }
               </td>
               <td className="py-2 pr-2">
                 <select value={t.category} onChange={e => changeCategory(t, e.target.value)}
-                  className="border rounded px-2 py-1 text-xs">
+                  className="border border-indigo-300 rounded px-2 py-1 text-xs">
                   {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
               </td>

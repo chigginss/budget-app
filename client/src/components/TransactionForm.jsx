@@ -23,23 +23,23 @@ export default function TransactionForm({ monthId, onSaved }) {
   return (
     <form onSubmit={handleSubmit} className="flex flex-wrap gap-2 mb-4 items-end">
       <input required placeholder="Merchant" value={form.name} onChange={e => set('name', e.target.value)}
-        className="border rounded px-3 py-2 text-sm flex-1 min-w-32" />
+        className="border border-indigo-300 rounded px-3 py-2 text-sm flex-1 min-w-32" />
       <select value={form.category} onChange={e => set('category', e.target.value)}
-        className="border rounded px-3 py-2 text-sm">
+        className="border border-indigo-300 rounded px-3 py-2 text-sm">
         {CATEGORIES.map(c => <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>)}
       </select>
       <select value={form.currency} onChange={e => set('currency', e.target.value)}
-        className="border rounded px-3 py-2 text-sm">
+        className="border border-indigo-300 rounded px-3 py-2 text-sm">
         <option value="NZD">NZD</option>
         <option value="USD">USD</option>
       </select>
       <input required type="number" step="0.01" placeholder="Amount" value={form.value}
         onChange={e => set('value', e.target.value)}
-        className="border rounded px-3 py-2 text-sm w-28" />
+        className="border border-indigo-300 rounded px-3 py-2 text-sm w-28" />
       <input required type="date" value={form.date} onChange={e => set('date', e.target.value)}
-        className="border rounded px-3 py-2 text-sm" />
+        className="border border-indigo-300 rounded px-3 py-2 text-sm" />
       <button type="submit" disabled={saving}
-        className="bg-gray-800 text-white px-4 py-2 rounded text-sm hover:bg-gray-700 disabled:opacity-50">
+        className="bg-indigo-600 text-white px-4 py-2 rounded text-sm hover:bg-indigo-700 disabled:opacity-50">
         Add
       </button>
     </form>

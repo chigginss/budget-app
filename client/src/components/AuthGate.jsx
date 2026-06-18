@@ -31,7 +31,7 @@ export default function AuthGate({ children }) {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <form onSubmit={handleSubmit} className="bg-white border border-gray-200 rounded-xl p-8 w-full max-w-sm shadow-sm">
+      <form onSubmit={handleSubmit} className="bg-white border border-indigo-200 rounded-xl p-8 w-full max-w-sm shadow-sm">
         <h1 className="text-2xl font-bold text-gray-900 mb-6">Welcome back</h1>
         <input
           type="password"
@@ -39,13 +39,13 @@ export default function AuthGate({ children }) {
           value={password}
           onChange={e => setPassword(e.target.value)}
           autoFocus
-          className="border rounded px-3 py-2 text-sm w-full mb-3"
+          className="border border-indigo-300 rounded px-3 py-2 text-sm w-full mb-3"
         />
         {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
         <button
           type="submit"
           disabled={loading}
-          className="bg-gray-800 text-white px-4 py-2 rounded text-sm w-full hover:bg-gray-700 disabled:opacity-50"
+          className="bg-indigo-600 text-white px-4 py-2 rounded text-sm w-full hover:bg-indigo-700 disabled:opacity-50"
         >
           {loading ? 'Checking...' : 'Enter'}
         </button>

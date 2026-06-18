@@ -45,48 +45,48 @@ export default function Blobs() {
       <Link to="/" className="text-sm text-gray-500 hover:text-gray-800 mb-6 inline-block">← Dashboard</Link>
       <h1 className="text-3xl font-bold mb-8 text-gray-900">Blobs</h1>
 
-      <div className="border border-gray-200 rounded-lg p-5 mb-8">
+      <div className="border border-indigo-200 rounded-lg p-5 mb-8">
         <div className="mb-3">
           <input
             placeholder="Title"
             value={form.title}
             onChange={e => setForm(p => ({ ...p, title: e.target.value }))}
             onKeyDown={e => e.key === 'Enter' && !e.shiftKey && addIdea()}
-            className="border rounded px-3 py-2 text-sm w-full mb-2"
+            className="border border-indigo-300 rounded px-3 py-2 text-sm w-full mb-2"
           />
           <textarea
             placeholder="Description (optional)"
             value={form.description}
             onChange={e => setForm(p => ({ ...p, description: e.target.value }))}
             rows={4}
-            className="border rounded px-3 py-2 text-sm w-full resize-y"
+            className="border border-indigo-300 rounded px-3 py-2 text-sm w-full resize-y"
           />
         </div>
-        <button onClick={addIdea} className="bg-gray-800 text-white px-4 py-2 rounded text-sm hover:bg-gray-700">
+        <button onClick={addIdea} className="bg-indigo-600 text-white px-4 py-2 rounded text-sm hover:bg-indigo-700">
           + Add
         </button>
       </div>
 
       <div className="space-y-4">
         {(list?.ideas || []).map(idea => (
-          <div key={idea._id} className="border border-gray-200 rounded-lg p-5">
+          <div key={idea._id} className="border border-indigo-200 rounded-lg p-5">
             {editId === idea._id ? (
               <>
                 <input
                   autoFocus
                   value={editForm.title}
                   onChange={e => setEditForm(p => ({ ...p, title: e.target.value }))}
-                  className="border rounded px-3 py-2 text-sm w-full mb-2 font-semibold"
+                  className="border border-indigo-300 rounded px-3 py-2 text-sm w-full mb-2 font-semibold"
                 />
                 <textarea
                   value={editForm.description}
                   onChange={e => setEditForm(p => ({ ...p, description: e.target.value }))}
                   rows={4}
-                  className="border rounded px-3 py-2 text-sm w-full resize-y mb-3"
+                  className="border border-indigo-300 rounded px-3 py-2 text-sm w-full resize-y mb-3"
                 />
                 <div className="flex gap-2">
-                  <button onClick={saveEdit} className="bg-gray-800 text-white px-3 py-1 rounded text-xs hover:bg-gray-700">Save</button>
-                  <button onClick={() => setEditId(null)} className="border px-3 py-1 rounded text-xs text-gray-600">Cancel</button>
+                  <button onClick={saveEdit} className="bg-indigo-600 text-white px-3 py-1 rounded text-xs hover:bg-indigo-700">Save</button>
+                  <button onClick={() => setEditId(null)} className="border border-indigo-300 px-3 py-1 rounded text-xs text-gray-600">Cancel</button>
                 </div>
               </>
             ) : (

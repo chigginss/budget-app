@@ -32,9 +32,9 @@ export default function FocusList() {
           onChange={e => setNewItem(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && addItem()}
           placeholder="Add a task..."
-          className="border border-gray-300 rounded px-3 py-2 flex-1 text-sm"
+          className="border border-indigo-300 rounded px-3 py-2 flex-1 text-sm"
         />
-        <button onClick={addItem} className="bg-gray-800 text-white px-4 py-2 rounded text-sm hover:bg-gray-700">
+        <button onClick={addItem} className="bg-indigo-600 text-white px-4 py-2 rounded text-sm hover:bg-indigo-700">
           Add
         </button>
       </div>

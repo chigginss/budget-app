@@ -68,31 +68,31 @@ export default function Ledger() {
         <h1 className="text-3xl font-bold text-gray-900">Ledger</h1>
         <button
           onClick={() => setShowAddMonth(!showAddMonth)}
-          className="bg-gray-800 text-white px-4 py-2 rounded text-sm hover:bg-gray-700"
+          className="bg-indigo-600 text-white px-4 py-2 rounded text-sm hover:bg-indigo-700"
         >
           + Add Duration
         </button>
       </div>
 
       {showAddMonth && (
-        <form onSubmit={addMonth} className="border border-gray-200 rounded-lg p-4 mb-6 grid grid-cols-2 gap-3">
+        <form onSubmit={addMonth} className="border border-indigo-200 rounded-lg p-4 mb-6 grid grid-cols-2 gap-3">
           <input required placeholder="Name (e.g. June 2026 or Bali Trip)" value={newMonth.name}
             onChange={e => setNewMonth(p => ({ ...p, name: e.target.value }))}
-            className="border rounded px-3 py-2 text-sm col-span-2" />
+            className="border border-indigo-300 rounded px-3 py-2 text-sm col-span-2" />
           <input required type="date" value={newMonth.startDate}
             onChange={e => setNewMonth(p => ({ ...p, startDate: e.target.value }))}
-            className="border rounded px-3 py-2 text-sm" />
+            className="border border-indigo-300 rounded px-3 py-2 text-sm" />
           <input required type="date" value={newMonth.endDate}
             onChange={e => setNewMonth(p => ({ ...p, endDate: e.target.value }))}
-            className="border rounded px-3 py-2 text-sm" />
+            className="border border-indigo-300 rounded px-3 py-2 text-sm" />
           <div className="col-span-2 flex items-center gap-2">
             <label className="text-sm text-gray-600">NZD per USD:</label>
             <input type="number" step="0.01" value={newMonth.exchangeRate}
               onChange={e => setNewMonth(p => ({ ...p, exchangeRate: parseFloat(e.target.value) }))}
               className="border rounded px-3 py-2 text-sm w-28" />
           </div>
-          <button type="submit" className="bg-gray-800 text-white px-4 py-2 rounded text-sm">Save</button>
-          <button type="button" onClick={() => setShowAddMonth(false)} className="border rounded px-4 py-2 text-sm">Cancel</button>
+          <button type="submit" className="bg-indigo-600 text-white px-4 py-2 rounded text-sm">Save</button>
+          <button type="button" onClick={() => setShowAddMonth(false)} className="border border-indigo-300 rounded px-4 py-2 text-sm">Cancel</button>
         </form>
       )}
 
@@ -103,7 +103,7 @@ export default function Ledger() {
             <div className="text-xs font-semibold text-gray-400 uppercase mb-1">{year}</div>
             <div className="flex flex-wrap gap-2">
               {grouped[year].map(m => (
-                <div key={m._id} className={`flex items-center rounded text-sm border ${activeId === m._id ? 'bg-gray-800 text-white border-gray-800' : 'border-gray-300'}`}>
+                <div key={m._id} className={`flex items-center rounded text-sm border ${activeId === m._id ? 'bg-indigo-600 text-white border-indigo-600' : 'border-indigo-300'}`}>
                   <button onClick={() => setActiveId(m._id)} className="px-4 py-2">{m.name}</button>
                   <button
                     onClick={() => deleteDuration(m._id)}
@@ -119,16 +119,16 @@ export default function Ledger() {
       {monthData && (
         <>
           {/* Notes collapsible */}
-          <div className="border border-gray-200 rounded-lg mb-6 overflow-hidden">
+          <div className="border border-indigo-200 rounded-lg mb-6 overflow-hidden">
             <button
               onClick={() => setShowNotes(o => !o)}
-              className="w-full flex justify-between items-center px-5 py-3 bg-gray-50 hover:bg-gray-100 text-left"
+              className="w-full flex justify-between items-center px-5 py-3 bg-indigo-50 hover:bg-indigo-100 text-left"
             >
               <span className="text-sm font-medium text-gray-700">Notes</span>
               <span className="text-gray-400 text-sm">{showNotes ? '▲' : '▼'}</span>
             </button>
             {showNotes && (
-              <div className="p-4 border-t border-gray-200">
+              <div className="p-4 border-t border-indigo-200">
                 <NotesField key={activeId} monthId={activeId} initialValue={monthData.details} />
               </div>
             )}
@@ -146,13 +146,13 @@ export default function Ledger() {
           <div className="flex gap-3 mb-4">
             <button
               onClick={() => setShowOcr(false)}
-              className={`px-4 py-2 rounded text-sm ${!showOcr ? 'bg-gray-800 text-white' : 'border border-gray-300'}`}
+              className={`px-4 py-2 rounded text-sm ${!showOcr ? 'bg-indigo-600 text-white' : 'border border-indigo-300'}`}
             >
               Manual Entry
             </button>
             <button
               onClick={() => setShowOcr(true)}
-              className={`px-4 py-2 rounded text-sm ${showOcr ? 'bg-gray-800 text-white' : 'border border-gray-300'}`}
+              className={`px-4 py-2 rounded text-sm ${showOcr ? 'bg-indigo-600 text-white' : 'border border-indigo-300'}`}
             >
               Upload Screenshot
             </button>

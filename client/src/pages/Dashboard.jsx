@@ -4,7 +4,7 @@ import NavCard from '../components/NavCard'
 import { get, post, del } from '../api/client'
 
 const QUOTES = [
-  'All we have to decide is what to do with the time that is given to us.',
+  'All we have to decide is what to do with the time that is given to us. - Gandalf',
   'I thought the fall would kill me, but it just made me real — Ocean Vuong',
   'Not everything that is faced can be changed, but nothing can be changed until it is faced. — James Baldwin',
   'I wouldn\'t change one stupid decision for another five years of life. — James Murphy',
@@ -63,7 +63,7 @@ export default function Dashboard() {
       {topItem && (
         <div className="mb-6">
           <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">On today's agenda</h2>
-          <div className="bg-gray-800 border border-gray-200 rounded-lg px-4 text-white py-3 font-medium">
+          <div className="border border-indigo-300 rounded-lg px-4 py-3 font-medium text-gray-800">
             {topItem.name}
           </div>
         </div>
@@ -72,7 +72,7 @@ export default function Dashboard() {
       <h2 className="text-xl font-semibold mb-1 text-gray-800">What's next?</h2>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
         {customLists.map(list => (
-          <div key={list._id} className="relative border border-gray-200 rounded-lg p-4">
+          <div key={list._id} className="relative border border-indigo-200 rounded-lg p-4">
             <Link to={`/lists/${list._id}`} className="font-medium text-gray-800 hover:underline block">
               {list.name}
             </Link>
@@ -92,11 +92,11 @@ export default function Dashboard() {
           onChange={e => setNewName(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && createList()}
           placeholder="New list name..."
-          className="border border-gray-300 rounded px-3 py-2 flex-1 text-sm"
+          className="border border-indigo-300 rounded px-3 py-2 flex-1 text-sm"
         />
         <button
           onClick={createList}
-          className="bg-gray-800 text-white px-4 py-2 rounded text-sm hover:bg-gray-700"
+          className="bg-indigo-600 text-white px-4 py-2 rounded text-sm hover:bg-indigo-700"
         >
           + New List
         </button>

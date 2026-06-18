@@ -87,10 +87,10 @@ export default function Forecast() {
       <h1 className="text-3xl font-bold mb-6 text-gray-900">Forecast</h1>
 
       {/* Fixed Costs Collapsible */}
-      <div className="border border-gray-200 rounded-lg mb-6 overflow-hidden">
+      <div className="border border-indigo-200 rounded-lg mb-6 overflow-hidden">
         <button
           onClick={() => setFixedOpen(o => !o)}
-          className="w-full flex justify-between items-center px-5 py-4 bg-gray-50 hover:bg-gray-100 text-left"
+          className="w-full flex justify-between items-center px-5 py-4 bg-indigo-50 hover:bg-indigo-100 text-left"
         >
           <span className="font-semibold text-gray-800">Fixed Costs</span>
           <div className="flex items-center gap-4">
@@ -99,10 +99,10 @@ export default function Forecast() {
           </div>
         </button>
         {fixedOpen && (
-          <div className="p-5 border-t border-gray-200">
+          <div className="p-5 border-t border-indigo-200">
             <div className="space-y-2 mb-4">
               {(fixedCosts || []).map((c, i) => (
-                <div key={i} className="flex justify-between items-center px-3 py-2 bg-gray-50 rounded">
+                <div key={i} className="flex justify-between items-center px-3 py-2 bg-indigo-50 rounded">
                   <span className="text-gray-700">{c.name}</span>
                   <div className="flex items-center gap-3">
                     <span className="font-medium">${c.amount.toFixed(2)}</span>
@@ -115,11 +115,11 @@ export default function Forecast() {
             <div className="flex gap-2">
               <input placeholder="e.g. Netflix" value={newCost.name}
                 onChange={e => setNewCost(p => ({ ...p, name: e.target.value }))}
-                className="border rounded px-3 py-2 text-sm flex-1" />
+                className="border border-indigo-300 rounded px-3 py-2 text-sm flex-1" />
               <input type="number" step="0.01" placeholder="Amount" value={newCost.amount}
                 onChange={e => setNewCost(p => ({ ...p, amount: e.target.value }))}
-                className="border rounded px-3 py-2 text-sm w-28" />
-              <button onClick={addFixedCost} className="bg-gray-800 text-white px-4 py-2 rounded text-sm hover:bg-gray-700">
+                className="border border-indigo-300 rounded px-3 py-2 text-sm w-28" />
+              <button onClick={addFixedCost} className="bg-indigo-600 text-white px-4 py-2 rounded text-sm hover:bg-indigo-700">
                 + Add
               </button>
             </div>
@@ -128,49 +128,49 @@ export default function Forecast() {
       </div>
 
       {/* Income + Account Balances */}
-      <div className="border border-gray-200 rounded-lg p-5 mb-8">
+      <div className="border border-indigo-200 rounded-lg p-5 mb-8">
         <div className="grid grid-cols-2 gap-4 mb-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Monthly Income (NZD)</label>
             <input type="number" step="0.01" defaultValue={income}
               onBlur={e => saveSettings({ income: parseFloat(e.target.value) || 0 })}
-              className="border rounded px-3 py-2 text-sm w-full" />
+              className="border border-indigo-300 rounded px-3 py-2 text-sm w-full" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Savings Account (NZD)</label>
             <input type="number" step="0.01" defaultValue={currentBalance}
               onBlur={e => saveSettings({ currentBalance: parseFloat(e.target.value) || 0 })}
-              className="border rounded px-3 py-2 text-sm w-full" />
+              className="border border-indigo-300 rounded px-3 py-2 text-sm w-full" />
           </div>
         </div>
 
-        <div className="border-t border-gray-100 pt-4 mb-4">
+        <div className="border-t border-indigo-100 pt-4 mb-4">
           <div className="flex items-center gap-2 mb-3">
             <span className="text-sm font-medium text-gray-700">USD Accounts</span>
             <span className="text-xs text-gray-400">NZD per USD:</span>
             <input type="number" step="0.01" defaultValue={rate}
               onBlur={e => saveSettings({ usdExchangeRate: parseFloat(e.target.value) || 1.65 })}
-              className="border rounded px-2 py-1 text-xs w-20" />
+              className="border border-indigo-300 rounded px-2 py-1 text-xs w-20" />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Second Bank Account (USD)</label>
               <input type="number" step="0.01" defaultValue={checkingBalance}
                 onBlur={e => saveSettings({ checkingBalance: parseFloat(e.target.value) || 0 })}
-                className="border rounded px-3 py-2 text-sm w-full" />
+                className="border border-indigo-300 rounded px-3 py-2 text-sm w-full" />
               <p className="text-xs text-gray-400 mt-1">= ${checkingNZD.toFixed(2)} NZD</p>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Credit Card Balance (USD)</label>
               <input type="number" step="0.01" defaultValue={creditCardBalance}
                 onBlur={e => saveSettings({ creditCardBalance: parseFloat(e.target.value) || 0 })}
-                className="border rounded px-3 py-2 text-sm w-full" />
+                className="border border-indigo-300 rounded px-3 py-2 text-sm w-full" />
               <p className="text-xs text-gray-400 mt-1">= ${creditCardNZD.toFixed(2)} NZD (debt)</p>
             </div>
           </div>
         </div>
 
-        <div className="border-t border-gray-100 pt-3 flex justify-between items-center">
+        <div className="border-t border-indigo-100 pt-3 flex justify-between items-center">
           <span className="text-sm text-gray-500">Starting balance (NZD savings + USD accounts − credit card)</span>
           <span className={`font-semibold ${startingBalance >= 0 ? 'text-green-700' : 'text-red-600'}`}>
             ${startingBalance.toFixed(2)} NZD
@@ -179,9 +179,9 @@ export default function Forecast() {
       </div>
 
       {/* Monthly running balance table */}
-      <div className="border border-gray-200 rounded-lg overflow-hidden">
+      <div className="border border-indigo-200 rounded-lg overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50 text-gray-500 uppercase text-xs tracking-wider">
+          <thead className="bg-indigo-50 text-gray-500 uppercase text-xs tracking-wider">
             <tr>
               <th className="px-4 py-3 text-left font-medium">Month</th>
               <th className="px-4 py-3 text-right font-medium">Variable</th>
@@ -189,11 +189,11 @@ export default function Forecast() {
               <th className="px-4 py-3 text-right font-medium">Balance</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-indigo-100">
             {monthsWithBalance.map(m => (
               <Fragment key={m.index}>
                 <tr
-                  className="hover:bg-gray-50 cursor-pointer"
+                  className="hover:bg-indigo-50 cursor-pointer"
                   onClick={() => setExpandedMonth(expandedMonth === m.index ? null : m.index)}
                 >
                   <td className="px-4 py-3 font-medium text-gray-800">{m.label}</td>
@@ -210,10 +210,10 @@ export default function Forecast() {
                 </tr>
                 {expandedMonth === m.index && (
                   <tr>
-                    <td colSpan={4} className="px-4 pb-4 pt-2 bg-gray-50">
+                    <td colSpan={4} className="px-4 pb-4 pt-2 bg-indigo-50">
                       <div className="space-y-2 mb-3">
                         {(m.variableCosts || []).map((c, i) => (
-                          <div key={i} className="flex justify-between items-center px-3 py-2 bg-white rounded border border-gray-100">
+                          <div key={i} className="flex justify-between items-center px-3 py-2 bg-white rounded border border-indigo-100">
                             <span className="text-gray-700 text-sm">{c.name}</span>
                             <div className="flex items-center gap-3">
                               <span className="font-medium text-sm">${c.amount.toFixed(2)}</span>
@@ -226,24 +226,24 @@ export default function Forecast() {
                       <div className="flex gap-2" onClick={e => e.stopPropagation()}>
                         <input placeholder="e.g. Haircut" value={newVariableCost.name}
                           onChange={e => setNewVariableCost(p => ({ ...p, name: e.target.value }))}
-                          className="border rounded px-3 py-2 text-sm flex-1" />
+                          className="border border-indigo-300 rounded px-3 py-2 text-sm flex-1" />
                         <input type="number" step="0.01" placeholder="Amount" value={newVariableCost.amount}
                           onChange={e => setNewVariableCost(p => ({ ...p, amount: e.target.value }))}
-                          className="border rounded px-3 py-2 text-sm w-28" />
+                          className="border border-indigo-300 rounded px-3 py-2 text-sm w-28" />
                         <button onClick={() => addVariableCost(m.index)}
-                          className="bg-gray-800 text-white px-4 py-2 rounded text-sm hover:bg-gray-700">
+                          className="bg-indigo-600 text-white px-4 py-2 rounded text-sm hover:bg-indigo-700">
                           + Add
                         </button>
                       </div>
                       {durations.length > 0 && (
-                        <div className="flex gap-2 mt-2 pt-2 border-t border-gray-200" onClick={e => e.stopPropagation()}>
+                        <div className="flex gap-2 mt-2 pt-2 border-t border-indigo-200" onClick={e => e.stopPropagation()}>
                           <select value={importId} onChange={e => setImportId(e.target.value)}
-                            className="border rounded px-3 py-2 text-sm flex-1 text-gray-600">
+                            className="border border-indigo-300 rounded px-3 py-2 text-sm flex-1 text-gray-600">
                             <option value="">Import total from duration...</option>
                             {durations.map(d => <option key={d._id} value={d._id}>{d.name}</option>)}
                           </select>
                           <button onClick={() => importFromDuration(m.index)} disabled={!importId}
-                            className="border border-gray-300 px-4 py-2 rounded text-sm hover:bg-gray-100 disabled:opacity-40">
+                            className="border border-indigo-300 px-4 py-2 rounded text-sm hover:bg-indigo-100 disabled:opacity-40">
                             Import
                           </button>
                         </div>
