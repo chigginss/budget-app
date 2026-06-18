@@ -3,7 +3,7 @@ const BASE = '/api'
 function authHeader() {
   const password = sessionStorage.getItem('auth_password')
   if (!password) return {}
-  return { 'Authorization': 'Basic ' + btoa(':' + password) }
+  return { 'X-App-Password': password }
 }
 
 async function req(path, options = {}) {
@@ -42,7 +42,7 @@ export const upload = (path, formData) => req(path, { method: 'POST', body: form
 
 export async function login(password) {
   const res = await fetch(`${BASE}/forecast`, {
-    headers: { 'Authorization': 'Basic ' + btoa(':' + password) },
+    headers: { 'X-App-Password': password },
   })
   if (!res.ok) throw new Error('Wrong password')
   sessionStorage.setItem('auth_password', password)

@@ -1,12 +1,14 @@
-const bcrypt = require('bcryptjs')
+const crypto = require('crypto')
 
-module.exports = async (req, res, next) => {
-  const header = req.headers['authorization']
-  if (header && header.startsWith('Basic ')) {
-    const credentials = Buffer.from(header.slice(6), 'base64').toString()
-    const password = credentials.slice(credentials.indexOf(':') + 1)
-    const hash = process.env.AUTH_PASSWORD_HASH
-    if (hash && await bcrypt.compare(password, hash)) return next()
+module.exports = (req, res, next) => {
+  const password = req.headers['x-app-password']
+  const expected = process.env.AUTH_PASSWORD
+  if (password && expected) {
+    try {
+      const a = Buffer.from(password)
+      const b = Buffer.from(expected)
+      if (a.length === b.length && crypto.timingSafeEqual(a, b)) return next()
+    } catch {}
   }
   res.status(401).json({ error: 'Unauthorized' })
 }

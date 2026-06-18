@@ -4,7 +4,7 @@ const errorHandler = require('./middleware/errorHandler')
 const auth = require('./middleware/auth')
 
 const app = express()
-app.use(cors())
+app.use(cors({ allowedHeaders: ['Content-Type', 'X-App-Password'] }))
 app.use(express.json())
 app.use('/api', auth)
 
