@@ -179,8 +179,8 @@ export default function Forecast() {
       </div>
 
       {/* Monthly running balance table */}
-      <div className="border border-indigo-200 rounded-lg overflow-hidden">
-        <table className="w-full text-sm">
+      <div className="border border-indigo-200 rounded-lg overflow-x-auto">
+        <table className="w-full text-sm min-w-[500px]">
           <thead className="bg-indigo-50 text-gray-500 uppercase text-xs tracking-wider">
             <tr>
               <th className="px-4 py-3 text-left font-medium">Month</th>
