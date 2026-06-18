@@ -47,11 +47,12 @@ router.put('/', async (req, res, next) => {
   try {
     let settings = await ForecastSettings.findOne()
     if (!settings) settings = new ForecastSettings({ months: generateMonths() })
-    const { income, currentBalance, checkingBalance, creditCardBalance, fixedCosts } = req.body
+    const { income, currentBalance, checkingBalance, creditCardBalance, usdExchangeRate, fixedCosts } = req.body
     if (income !== undefined) settings.income = income
     if (currentBalance !== undefined) settings.currentBalance = currentBalance
     if (checkingBalance !== undefined) settings.checkingBalance = checkingBalance
     if (creditCardBalance !== undefined) settings.creditCardBalance = creditCardBalance
+    if (usdExchangeRate !== undefined) settings.usdExchangeRate = usdExchangeRate
     if (fixedCosts !== undefined) settings.fixedCosts = fixedCosts
     await settings.save()
     res.json(settings)

@@ -66,11 +66,15 @@ export default function Forecast() {
 
   if (!settings) return <div className="p-6 text-gray-500">Loading...</div>
 
-  const { income, currentBalance, checkingBalance, creditCardBalance, fixedCosts, months } = settings
+  const { income, currentBalance, checkingBalance, creditCardBalance, usdExchangeRate, fixedCosts, months } = settings
+  const rate = usdExchangeRate || 1.65
+  const checkingNZD = (checkingBalance || 0) * rate
+  const creditCardNZD = (creditCardBalance || 0) * rate
+  const startingBalance = (currentBalance || 0) + checkingNZD - creditCardNZD
   const fixedCostsTotal = (fixedCosts || []).reduce((s, c) => s + (c.amount || 0), 0)
 
   const monthsWithBalance = months.reduce((acc, m) => {
-    const prevBalance = acc.length === 0 ? (currentBalance || 0) : acc[acc.length - 1].balance
+    const prevBalance = acc.length === 0 ? startingBalance : acc[acc.length - 1].balance
     const variableCostsTotal = (m.variableCosts || []).reduce((s, c) => s + (c.amount || 0), 0)
     const net = (income || 0) - fixedCostsTotal - variableCostsTotal
     acc.push({ ...m, variableCostsTotal, net, balance: prevBalance + net })
@@ -124,30 +128,53 @@ export default function Forecast() {
       </div>
 
       {/* Income + Account Balances */}
-      <div className="grid grid-cols-2 gap-4 mb-8 max-w-2xl">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Monthly Income (NZD)</label>
-          <input type="number" step="0.01" defaultValue={income}
-            onBlur={e => saveSettings({ income: parseFloat(e.target.value) || 0 })}
-            className="border rounded px-3 py-2 text-sm w-full" />
+      <div className="border border-gray-200 rounded-lg p-5 mb-8">
+        <div className="grid grid-cols-2 gap-4 mb-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Monthly Income (NZD)</label>
+            <input type="number" step="0.01" defaultValue={income}
+              onBlur={e => saveSettings({ income: parseFloat(e.target.value) || 0 })}
+              className="border rounded px-3 py-2 text-sm w-full" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Savings Account (NZD)</label>
+            <input type="number" step="0.01" defaultValue={currentBalance}
+              onBlur={e => saveSettings({ currentBalance: parseFloat(e.target.value) || 0 })}
+              className="border rounded px-3 py-2 text-sm w-full" />
+          </div>
         </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Savings Account (NZD)</label>
-          <input type="number" step="0.01" defaultValue={currentBalance}
-            onBlur={e => saveSettings({ currentBalance: parseFloat(e.target.value) || 0 })}
-            className="border rounded px-3 py-2 text-sm w-full" />
+
+        <div className="border-t border-gray-100 pt-4 mb-4">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-sm font-medium text-gray-700">USD Accounts</span>
+            <span className="text-xs text-gray-400">NZD per USD:</span>
+            <input type="number" step="0.01" defaultValue={rate}
+              onBlur={e => saveSettings({ usdExchangeRate: parseFloat(e.target.value) || 1.65 })}
+              className="border rounded px-2 py-1 text-xs w-20" />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Second Bank Account (USD)</label>
+              <input type="number" step="0.01" defaultValue={checkingBalance}
+                onBlur={e => saveSettings({ checkingBalance: parseFloat(e.target.value) || 0 })}
+                className="border rounded px-3 py-2 text-sm w-full" />
+              <p className="text-xs text-gray-400 mt-1">= ${checkingNZD.toFixed(2)} NZD</p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Credit Card Balance (USD)</label>
+              <input type="number" step="0.01" defaultValue={creditCardBalance}
+                onBlur={e => saveSettings({ creditCardBalance: parseFloat(e.target.value) || 0 })}
+                className="border rounded px-3 py-2 text-sm w-full" />
+              <p className="text-xs text-gray-400 mt-1">= ${creditCardNZD.toFixed(2)} NZD (debt)</p>
+            </div>
+          </div>
         </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Second Bank Account (NZD)</label>
-          <input type="number" step="0.01" defaultValue={checkingBalance}
-            onBlur={e => saveSettings({ checkingBalance: parseFloat(e.target.value) || 0 })}
-            className="border rounded px-3 py-2 text-sm w-full" />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Credit Card Balance (NZD)</label>
-          <input type="number" step="0.01" defaultValue={creditCardBalance}
-            onBlur={e => saveSettings({ creditCardBalance: parseFloat(e.target.value) || 0 })}
-            className="border rounded px-3 py-2 text-sm w-full" />
+
+        <div className="border-t border-gray-100 pt-3 flex justify-between items-center">
+          <span className="text-sm text-gray-500">Starting balance (NZD savings + USD accounts − credit card)</span>
+          <span className={`font-semibold ${startingBalance >= 0 ? 'text-green-700' : 'text-red-600'}`}>
+            ${startingBalance.toFixed(2)} NZD
+          </span>
         </div>
       </div>
 

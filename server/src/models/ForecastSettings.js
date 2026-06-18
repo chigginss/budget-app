@@ -17,6 +17,7 @@ const ForecastSettingsSchema = new mongoose.Schema({
   currentBalance: { type: Number, default: 0 },
   checkingBalance: { type: Number, default: 0 },
   creditCardBalance: { type: Number, default: 0 },
+  usdExchangeRate: { type: Number, default: 1.65 },
   fixedCosts: { type: [FixedCostSchema], default: [] },
   months: [ForecastMonthSchema],
 }, { timestamps: true })
