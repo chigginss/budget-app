@@ -198,7 +198,9 @@ export default function Forecast() {
                 >
                   <td className="px-4 py-3 font-medium text-gray-800">{m.label}</td>
                   <td className="px-4 py-3 text-right">
-                    <span className="text-gray-700">${m.variableCostsTotal.toFixed(2)}</span>
+                    <span className={m.variableCostsTotal < 0 ? 'text-green-600' : 'text-gray-700'}>
+                      {m.variableCostsTotal < 0 ? '+' : ''}${Math.abs(m.variableCostsTotal).toFixed(2)}
+                    </span>
                     <span className="text-gray-400 text-xs ml-2">{expandedMonth === m.index ? '▲' : '▼'}</span>
                   </td>
                   <td className={`px-4 py-3 text-right font-medium ${m.net >= 0 ? 'text-green-600' : 'text-red-500'}`}>
@@ -216,7 +218,9 @@ export default function Forecast() {
                           <div key={i} className="flex justify-between items-center px-3 py-2 bg-white rounded border border-indigo-100">
                             <span className="text-gray-700 text-sm">{c.name}</span>
                             <div className="flex items-center gap-3">
-                              <span className="font-medium text-sm">${c.amount.toFixed(2)}</span>
+                              <span className={`font-medium text-sm ${c.amount < 0 ? 'text-green-600' : ''}`}>
+                                {c.amount < 0 ? '+' : ''}${Math.abs(c.amount).toFixed(2)}
+                              </span>
                               <button onClick={e => { e.stopPropagation(); removeVariableCost(m.index, i) }} className="text-gray-400 hover:text-red-500 text-sm">✕</button>
                             </div>
                           </div>
@@ -227,7 +231,7 @@ export default function Forecast() {
                         <input placeholder="e.g. Haircut" value={newVariableCost.name}
                           onChange={e => setNewVariableCost(p => ({ ...p, name: e.target.value }))}
                           className="border border-indigo-300 rounded px-3 py-2 text-sm flex-1" />
-                        <input type="number" step="0.01" placeholder="Amount" value={newVariableCost.amount}
+                        <input type="number" step="0.01" placeholder="Amount (− = income)" value={newVariableCost.amount}
                           onChange={e => setNewVariableCost(p => ({ ...p, amount: e.target.value }))}
                           className="border border-indigo-300 rounded px-3 py-2 text-sm w-28" />
                         <button onClick={() => addVariableCost(m.index)}
