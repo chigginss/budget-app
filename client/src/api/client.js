@@ -1,4 +1,4 @@
-const BASE = '/api'
+const BASE = (import.meta.env.VITE_API_URL || '') + '/api'
 
 function authHeader() {
   const password = sessionStorage.getItem('auth_password')
