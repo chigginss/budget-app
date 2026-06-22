@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { get, post, put, del } from '../api/client'
+import ReactMarkdown from 'react-markdown'
 
 export default function ListPage() {
   const { id } = useParams()
   const [list, setList] = useState(null)
   const [newItem, setNewItem] = useState('')
   const [draggedId, setDraggedId] = useState(null)
+  const [editingId, setEditingId] = useState(null)
+  const [editingText, setEditingText] = useState('')
 
   const load = () => get(`/lists/${id}`).then(setList).catch(console.error)
 
@@ -27,6 +30,24 @@ export default function ListPage() {
   const remove = async (itemId) => {
     await del(`/items/${itemId}`)
     load()
+  }
+
+  const startEdit = (item) => {
+    setEditingId(item._id)
+    setEditingText(item.name)
+  }
+
+  const saveEdit = async (itemId) => {
+    if (!editingText.trim()) return
+    await put(`/items/${itemId}`, { name: editingText.trim() })
+    setEditingId(null)
+    setEditingText('')
+    load()
+  }
+
+  const cancelEdit = () => {
+    setEditingId(null)
+    setEditingText('')
   }
 
   const handleDrop = async (targetId) => {
@@ -66,17 +87,53 @@ export default function ListPage() {
       {list.items?.map(item => (
         <div
           key={item._id}
-          draggable
+          draggable={editingId !== item._id}
           onDragStart={() => setDraggedId(item._id)}
           onDragOver={e => e.preventDefault()}
           onDrop={() => handleDrop(item._id)}
-          className="flex items-center gap-3 py-2 border-b border-indigo-100 last:border-0 cursor-grab active:cursor-grabbing"
+          className={`py-3 border-b border-indigo-100 last:border-0 ${editingId !== item._id ? 'cursor-grab active:cursor-grabbing' : ''}`}
         >
-          <input type="checkbox" checked={item.status === 'completed'} onChange={() => toggle(item)} />
-          <span className={`flex-1 ${item.status === 'completed' ? 'line-through text-gray-400' : 'text-gray-800'}`}>
-            {item.name}
-          </span>
-          <button onClick={() => remove(item._id)} className="text-xs text-red-400 hover:text-red-600">Delete</button>
+          {editingId === item._id ? (
+            <div className="flex flex-col gap-2">
+              <textarea
+                value={editingText}
+                onChange={e => setEditingText(e.target.value)}
+                rows={10}
+                className="border border-indigo-300 rounded px-3 py-2 text-sm w-full resize-y"
+                autoFocus
+              />
+              <div className="flex gap-2">
+                <button onClick={() => saveEdit(item._id)}
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded text-xs">
+                  Save
+                </button>
+                <button onClick={cancelEdit}
+                  className="border border-indigo-300 px-3 py-1 rounded text-xs hover:bg-indigo-50">
+                  Cancel
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-start gap-3">
+              <input
+                type="checkbox"
+                checked={item.status === 'completed'}
+                onChange={() => toggle(item)}
+                className="mt-1 shrink-0"
+              />
+              <div className={`flex-1 min-w-0 ${item.status === 'completed' ? 'opacity-50' : ''}`}>
+                <div className="prose prose-sm max-w-none">
+                  <ReactMarkdown>{item.name}</ReactMarkdown>
+                </div>
+              </div>
+              <div className="flex gap-2 shrink-0">
+                <button onClick={() => startEdit(item)}
+                  className="text-xs text-indigo-500 hover:text-indigo-700">Edit</button>
+                <button onClick={() => remove(item._id)}
+                  className="text-xs text-red-400 hover:text-red-600">Delete</button>
+              </div>
+            </div>
+          )}
         </div>
       ))}
     </div>
