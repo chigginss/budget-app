@@ -45,25 +45,27 @@ router.delete('/:id', async (req, res, next) => {
   } catch (err) { next(err) }
 })
 
-// PUT /api/itineraries/:id/days/:date/notes  (:date = YYYY-MM-DD)
-router.put('/:id/days/:date/notes', async (req, res, next) => {
+router.put('/:id/days/:date', async (req, res, next) => {
   try {
     const itinerary = await Itinerary.findById(req.params.id)
     if (!itinerary) return res.status(404).json({ error: 'Itinerary not found' })
 
-    const datePrefix = req.params.date // 'YYYY-MM-DD'
-    const notes = req.body.notes ?? ''
+    const datePrefix = req.params.date
+    const { title = '', description = '', notes = '' } = req.body
+    const isEmpty = title === '' && description === '' && notes === ''
 
     const idx = itinerary.days.findIndex(d =>
       d.date.toISOString().startsWith(datePrefix)
     )
 
-    if (notes === '') {
+    if (isEmpty) {
       if (idx !== -1) itinerary.days.splice(idx, 1)
     } else if (idx !== -1) {
+      itinerary.days[idx].title = title
+      itinerary.days[idx].description = description
       itinerary.days[idx].notes = notes
     } else {
-      itinerary.days.push({ date: new Date(datePrefix + 'T00:00:00.000Z'), notes })
+      itinerary.days.push({ date: new Date(datePrefix + 'T00:00:00.000Z'), title, description, notes })
     }
 
     await itinerary.save()

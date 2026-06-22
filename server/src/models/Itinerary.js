@@ -3,6 +3,8 @@ const mongoose = require('mongoose')
 const DaySchema = new mongoose.Schema({
   date: { type: Date, required: true },
   notes: { type: String, default: '' },
+  title: { type: String, default: '' },
+  description: { type: String, default: '' },
 }, { _id: false })
 
 const ItinerarySchema = new mongoose.Schema({

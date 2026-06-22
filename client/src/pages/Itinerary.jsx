@@ -5,10 +5,8 @@ import ReactMarkdown from 'react-markdown'
 
 // --- Helpers ---
 
-// Returns YYYY-MM-DD string for a date, always in UTC
 const toDateStr = (d) => new Date(d).toISOString().split('T')[0]
 
-// Returns all Date objects from startDate to endDate inclusive (UTC)
 function getDaysInRange(startDate, endDate) {
   const days = []
   const current = new Date(toDateStr(startDate) + 'T00:00:00.000Z')
@@ -20,19 +18,13 @@ function getDaysInRange(startDate, endDate) {
   return days
 }
 
-// Groups dates into 7-day weeks starting Sunday, padded to fill the week
 function getWeeks(startDate, endDate) {
   const start = new Date(toDateStr(startDate) + 'T00:00:00.000Z')
   const end = new Date(toDateStr(endDate) + 'T00:00:00.000Z')
-
-  // Rewind to the Sunday on or before start
   const firstSunday = new Date(start)
   firstSunday.setUTCDate(firstSunday.getUTCDate() - firstSunday.getUTCDay())
-
-  // Advance to the Saturday on or after end
   const lastSaturday = new Date(end)
   lastSaturday.setUTCDate(lastSaturday.getUTCDate() + (6 - lastSaturday.getUTCDay()))
-
   const weeks = []
   const current = new Date(firstSunday)
   while (current <= lastSaturday) {
@@ -56,11 +48,12 @@ const formatShort = (dateStr) =>
     weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC',
   })
 
-// --- DayPanel (module-level to avoid remount issues) ---
-// Use key={expandedDay} when rendering so it re-initialises when day changes.
+// --- DayPanel ---
 
-function DayPanel({ dateStr, dayActivities, notes, onSaveNotes, onAddActivity, onSaveActivity, onDeleteActivity }) {
+function DayPanel({ dateStr, dayActivities, notes, title, description, onSaveDaySummary, onAddActivity, onSaveActivity, onDeleteActivity }) {
   const [localNotes, setLocalNotes] = useState(notes)
+  const [localTitle, setLocalTitle] = useState(title)
+  const [localDescription, setLocalDescription] = useState(description)
   const [showForm, setShowForm] = useState(false)
   const [newActivity, setNewActivity] = useState({ title: '', description: '', locationUrl: '' })
   const [editingId, setEditingId] = useState(null)
@@ -70,7 +63,30 @@ function DayPanel({ dateStr, dayActivities, notes, onSaveNotes, onAddActivity, o
     <div className="border-t border-indigo-200 p-4 bg-indigo-50">
       <h3 className="font-semibold text-gray-800 mb-3">{formatLong(dateStr)}</h3>
 
-      {/* Activities list */}
+      {/* Day summary */}
+      <div className="mb-4 space-y-2">
+        <input
+          value={localTitle}
+          onChange={e => setLocalTitle(e.target.value)}
+          className="border border-indigo-300 rounded px-3 py-2 text-sm w-full"
+          placeholder="Day summary..."
+        />
+        <textarea
+          value={localDescription}
+          onChange={e => setLocalDescription(e.target.value)}
+          rows={3}
+          className="border border-indigo-300 rounded px-3 py-2 text-sm w-full resize-y"
+          placeholder="Describe the day..."
+        />
+        <button
+          onClick={() => onSaveDaySummary(dateStr, { title: localTitle, description: localDescription, notes: localNotes })}
+          className="bg-indigo-600 text-white px-3 py-1 rounded text-xs hover:bg-indigo-700"
+        >
+          Save summary
+        </button>
+      </div>
+
+      {/* Activities */}
       <div className="space-y-2 mb-3">
         {dayActivities.map(a => (
           <div key={a._id} className="bg-white border border-indigo-100 rounded p-3">
@@ -94,7 +110,7 @@ function DayPanel({ dateStr, dayActivities, notes, onSaveNotes, onAddActivity, o
                   value={editingActivity.locationUrl}
                   onChange={e => setEditingActivity(p => ({ ...p, locationUrl: e.target.value }))}
                   className="border border-indigo-300 rounded px-3 py-1.5 text-sm w-full"
-                  placeholder="Google Maps link (optional)"
+                  placeholder="Link (optional)"
                 />
                 <div className="flex gap-2">
                   <button
@@ -122,7 +138,7 @@ function DayPanel({ dateStr, dayActivities, notes, onSaveNotes, onAddActivity, o
                     <button
                       onClick={() => onDeleteActivity(a._id)}
                       className="text-xs text-red-400 hover:text-red-600"
-                    >Delete</button>
+                    >✕</button>
                   </div>
                 </div>
                 {a.description && <p className="text-xs text-gray-600 mt-1">{a.description}</p>}
@@ -161,7 +177,7 @@ function DayPanel({ dateStr, dayActivities, notes, onSaveNotes, onAddActivity, o
             value={newActivity.locationUrl}
             onChange={e => setNewActivity(p => ({ ...p, locationUrl: e.target.value }))}
             className="border border-indigo-300 rounded px-3 py-1.5 text-sm w-full"
-            placeholder="Google Maps link (optional)"
+            placeholder="Link (optional)"
           />
           <div className="flex gap-2">
             <button
@@ -195,11 +211,16 @@ function DayPanel({ dateStr, dayActivities, notes, onSaveNotes, onAddActivity, o
         <textarea
           value={localNotes}
           onChange={e => setLocalNotes(e.target.value)}
-          onBlur={() => onSaveNotes(dateStr, localNotes)}
           rows={3}
           className="border border-indigo-300 rounded px-3 py-2 text-sm w-full resize-y"
           placeholder="Notes for this day..."
         />
+        <button
+          onClick={() => onSaveDaySummary(dateStr, { title: localTitle, description: localDescription, notes: localNotes })}
+          className="mt-2 bg-indigo-600 text-white px-3 py-1 rounded text-xs hover:bg-indigo-700"
+        >
+          Save notes
+        </button>
       </div>
     </div>
   )
@@ -216,7 +237,7 @@ export default function Itinerary() {
   const [months, setMonths] = useState([])
   const [ledgerMonth, setLedgerMonth] = useState(null)
   const [expandedDay, setExpandedDay] = useState(null)
-  const [editingField, setEditingField] = useState(null)  // 'name' | 'description' | null
+  const [editingField, setEditingField] = useState(null)
   const [editValues, setEditValues] = useState({ name: '', description: '' })
   const [selectedListId, setSelectedListId] = useState('')
   const [collapsedLists, setCollapsedLists] = useState({})
@@ -234,7 +255,6 @@ export default function Itinerary() {
     get('/months').then(setMonths).catch(console.error)
   }, [id])
 
-  // Fetch linked list items whenever linkedListIds changes
   useEffect(() => {
     if (!itinerary?.linkedListIds?.length) return
     itinerary.linkedListIds.forEach(listId => {
@@ -246,7 +266,6 @@ export default function Itinerary() {
     })
   }, [itinerary?.linkedListIds?.join(',')])
 
-  // Fetch ledger month with transactions when ledgerMonthId changes
   useEffect(() => {
     if (!itinerary?.ledgerMonthId) { setLedgerMonth(null); return }
     get(`/months/${itinerary.ledgerMonthId}`).then(setLedgerMonth).catch(console.error)
@@ -258,9 +277,8 @@ export default function Itinerary() {
     setEditingField(null)
   }
 
-  const saveDayNotes = async (dateStr, notes) => {
-    await put(`/itineraries/${id}/days/${dateStr}/notes`, { notes })
-    // Reload to sync embedded days array
+  const saveDaySummary = async (dateStr, { title, description, notes }) => {
+    await put(`/itineraries/${id}/days/${dateStr}`, { title, description, notes })
     loadItinerary()
   }
 
@@ -286,7 +304,6 @@ export default function Itinerary() {
     })
     setItinerary(prev => ({ ...prev, linkedListIds: updated.linkedListIds }))
     setSelectedListId('')
-    // Fetch the new list's data
     get(`/lists/${listId}`)
       .then(data => setLinkedListsData(prev => ({ ...prev, [listId]: data })))
       .catch(console.error)
@@ -305,6 +322,12 @@ export default function Itinerary() {
 
   const notesForDay = (dateStr) =>
     itinerary?.days?.find(d => toDateStr(d.date) === dateStr)?.notes || ''
+
+  const titleForDay = (dateStr) =>
+    itinerary?.days?.find(d => toDateStr(d.date) === dateStr)?.title || ''
+
+  const descriptionForDay = (dateStr) =>
+    itinerary?.days?.find(d => toDateStr(d.date) === dateStr)?.description || ''
 
   if (!itinerary) return <div className="p-6 text-gray-500">Loading...</div>
 
@@ -474,7 +497,7 @@ export default function Itinerary() {
                   </button>
                   <div className="flex items-center gap-3">
                     <Link to={`/lists/${listId}`} className="text-xs text-indigo-500 hover:underline">Open →</Link>
-                    <button onClick={() => removeLinkedList(listId)} className="text-xs text-red-400 hover:text-red-600">Remove</button>
+                    <button onClick={() => removeLinkedList(listId)} className="text-xs text-red-400 hover:text-red-600">✕</button>
                   </div>
                 </div>
                 {!isCollapsed && listData && (
@@ -508,7 +531,7 @@ export default function Itinerary() {
           <p className="text-xs text-gray-500 mt-0.5">{tripDays.length} {tripDays.length === 1 ? 'day' : 'days'}</p>
         </div>
 
-        {/* Desktop: 7-column week grid — hidden below sm */}
+        {/* Desktop week grid */}
         <div className="hidden sm:block">
           <div className="grid grid-cols-7 border-b border-indigo-100">
             {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => (
@@ -529,11 +552,12 @@ export default function Itinerary() {
                     const isTrip = dateStr >= tripStart && dateStr <= tripEnd
                     const isExpanded = expandedDay === dateStr
                     const dayActs = activitiesForDay(dateStr)
+                    const dayTitle = titleForDay(dateStr)
                     return (
                       <div
                         key={dateStr}
                         onClick={() => isTrip && setExpandedDay(isExpanded ? null : dateStr)}
-                        className={`min-h-[64px] p-2 border-r border-indigo-50 last:border-0 ${
+                        className={`min-h-[96px] p-2 border-r border-indigo-50 last:border-0 ${
                           isTrip
                             ? `cursor-pointer ${isExpanded ? 'bg-indigo-100 ring-2 ring-inset ring-indigo-400' : 'hover:bg-indigo-50'}`
                             : 'bg-gray-50'
@@ -543,9 +567,12 @@ export default function Itinerary() {
                           {day.getUTCDate()}
                         </div>
                         {isTrip && dayActs.length > 0 && (
-                          <div className="text-xs text-indigo-500">
+                          <div className="text-xs text-indigo-500 mb-1">
                             {dayActs.length} {dayActs.length === 1 ? 'activity' : 'activities'}
                           </div>
+                        )}
+                        {isTrip && dayTitle && (
+                          <div className="text-xs text-indigo-700 truncate">{dayTitle}</div>
                         )}
                       </div>
                     )
@@ -557,7 +584,9 @@ export default function Itinerary() {
                     dateStr={expandedDay}
                     dayActivities={activitiesForDay(expandedDay)}
                     notes={notesForDay(expandedDay)}
-                    onSaveNotes={saveDayNotes}
+                    title={titleForDay(expandedDay)}
+                    description={descriptionForDay(expandedDay)}
+                    onSaveDaySummary={saveDaySummary}
                     onAddActivity={(form) => addActivity(expandedDay, form)}
                     onSaveActivity={saveActivity}
                     onDeleteActivity={deleteActivity}
@@ -568,19 +597,23 @@ export default function Itinerary() {
           })}
         </div>
 
-        {/* Mobile: vertical list of trip days — hidden at sm and above */}
+        {/* Mobile vertical day list */}
         <div className="sm:hidden divide-y divide-indigo-100">
           {tripDays.map(day => {
             const dateStr = toDateStr(day)
             const isExpanded = expandedDay === dateStr
             const dayActs = activitiesForDay(dateStr)
+            const dayTitle = titleForDay(dateStr)
             return (
               <div key={dateStr}>
                 <div
                   onClick={() => setExpandedDay(isExpanded ? null : dateStr)}
                   className={`flex items-center justify-between px-4 py-3 cursor-pointer ${isExpanded ? 'bg-indigo-100' : 'hover:bg-indigo-50'}`}
                 >
-                  <span className="font-medium text-sm text-gray-800">{formatShort(dateStr)}</span>
+                  <div>
+                    <span className="font-medium text-sm text-gray-800">{formatShort(dateStr)}</span>
+                    {dayTitle && <p className="text-xs text-indigo-600 mt-0.5">{dayTitle}</p>}
+                  </div>
                   <div className="flex items-center gap-2">
                     {dayActs.length > 0 && (
                       <span className="text-xs text-indigo-500">
@@ -596,7 +629,9 @@ export default function Itinerary() {
                     dateStr={dateStr}
                     dayActivities={activitiesForDay(dateStr)}
                     notes={notesForDay(dateStr)}
-                    onSaveNotes={saveDayNotes}
+                    title={titleForDay(dateStr)}
+                    description={descriptionForDay(dateStr)}
+                    onSaveDaySummary={saveDaySummary}
                     onAddActivity={(form) => addActivity(dateStr, form)}
                     onSaveActivity={saveActivity}
                     onDeleteActivity={deleteActivity}
