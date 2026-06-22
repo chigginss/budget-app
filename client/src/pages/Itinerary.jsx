@@ -345,7 +345,6 @@ export default function Itinerary() {
             <textarea
               value={editValues.description}
               onChange={e => setEditValues(p => ({ ...p, description: e.target.value }))}
-              onBlur={() => saveField('description', editValues.description)}
               rows={8}
               className="border border-indigo-300 rounded px-3 py-2 text-sm w-full resize-y"
               placeholder="Trip description..."
