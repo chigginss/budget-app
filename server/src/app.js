@@ -17,6 +17,8 @@ app.use('/api/lists', require('./routes/lists'))
 app.use('/api/items', require('./routes/items'))
 app.use('/api/ideas', require('./routes/ideas'))
 app.use('/api/forecast', require('./routes/forecast'))
+app.use('/api/itineraries', require('./routes/itineraries'))
+app.use('/api/activities', require('./routes/activities'))
 
 app.use(errorHandler)
 
