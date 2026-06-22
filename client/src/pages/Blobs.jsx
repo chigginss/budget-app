@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { get, post, put, del } from '../api/client'
+import ReactMarkdown from 'react-markdown'
 
 export default function Blobs() {
   const [list, setList] = useState(null)
@@ -58,7 +59,7 @@ export default function Blobs() {
             placeholder="Description (optional)"
             value={form.description}
             onChange={e => setForm(p => ({ ...p, description: e.target.value }))}
-            rows={4}
+            rows={10}
             className="border border-indigo-300 rounded px-3 py-2 text-sm w-full resize-y"
           />
         </div>
@@ -81,7 +82,7 @@ export default function Blobs() {
                 <textarea
                   value={editForm.description}
                   onChange={e => setEditForm(p => ({ ...p, description: e.target.value }))}
-                  rows={4}
+                  rows={10}
                   className="border border-indigo-300 rounded px-3 py-2 text-sm w-full resize-y mb-3"
                 />
                 <div className="flex gap-2">
@@ -99,7 +100,9 @@ export default function Blobs() {
                   </div>
                 </div>
                 {idea.description && (
-                  <p className="mt-2 text-sm text-gray-600 whitespace-pre-wrap">{idea.description}</p>
+                  <div className="mt-2 prose prose-sm text-gray-600 max-w-none">
+                    <ReactMarkdown>{idea.description}</ReactMarkdown>
+                  </div>
                 )}
               </>
             )}
