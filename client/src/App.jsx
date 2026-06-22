@@ -7,6 +7,8 @@ import WishList from './pages/WishList'
 import WhatsNext from './pages/WhatsNext'
 import ListPage from './pages/ListPage'
 import Blobs from './pages/Blobs'
+import Itineraries from './pages/Itineraries'
+import Itinerary from './pages/Itinerary'
 
 export default function App() {
   return (
@@ -20,6 +22,8 @@ export default function App() {
         <Route path="/whats-next" element={<WhatsNext />} />
         <Route path="/blobs" element={<Blobs />} />
         <Route path="/lists/:id" element={<ListPage />} />
+        <Route path="/itineraries" element={<Itineraries />} />
+        <Route path="/itineraries/:id" element={<Itinerary />} />
       </Routes>
     </BrowserRouter>
   )

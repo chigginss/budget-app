@@ -17,6 +17,7 @@ const MAIN_PAGES = [
   { label: 'Wish List', path: '/wishlist', description: 'Things to buy' },
   { label: "What's Next", path: '/whats-next', description: 'Your custom lists' },
   { label: 'Blobs', path: '/blobs', description: 'Ideas & thoughts' },
+  { label: 'Itinerary', path: '/itineraries', description: 'Plan your trips' },
 ]
 
 export default function Dashboard() {
