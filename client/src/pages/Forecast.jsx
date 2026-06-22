@@ -2,6 +2,65 @@ import { Fragment, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { get, put } from '../api/client'
 
+function ExpandedPanel({ m, durations, importId, setImportId, newVariableCost, setNewVariableCost, addVariableCost, removeVariableCost, importFromDuration }) {
+  return (
+    <div className="px-4 pb-4 pt-2 bg-indigo-50">
+      <div className="space-y-2 mb-3">
+        {(m.variableCosts || []).map((c, i) => (
+          <div key={i} className="flex justify-between items-center px-3 py-2 bg-white rounded border border-indigo-100">
+            <span className="text-gray-700 text-sm">{c.name}</span>
+            <div className="flex items-center gap-3">
+              <span className={`font-medium text-sm ${c.amount < 0 ? 'text-green-600' : ''}`}>
+                {c.amount < 0 ? '+' : ''}${Math.abs(c.amount).toFixed(2)}
+              </span>
+              <button
+                onClick={e => { e.stopPropagation(); removeVariableCost(m.index, i) }}
+                className="text-gray-400 hover:text-red-500 text-sm"
+              >✕</button>
+            </div>
+          </div>
+        ))}
+        {(m.variableCosts || []).length === 0 && <p className="text-sm text-gray-400">No variable costs yet.</p>}
+      </div>
+      <div className="flex gap-2" onClick={e => e.stopPropagation()}>
+        <input
+          placeholder="e.g. Haircut"
+          value={newVariableCost.name}
+          onChange={e => setNewVariableCost(p => ({ ...p, name: e.target.value }))}
+          className="border border-indigo-300 rounded px-3 py-2 text-sm flex-1"
+        />
+        <input
+          type="number" step="0.01" placeholder="Amount (− = income)"
+          value={newVariableCost.amount}
+          onChange={e => setNewVariableCost(p => ({ ...p, amount: e.target.value }))}
+          className="border border-indigo-300 rounded px-3 py-2 text-sm w-28"
+        />
+        <button
+          onClick={() => addVariableCost(m.index)}
+          className="bg-indigo-600 text-white px-4 py-2 rounded text-sm hover:bg-indigo-700"
+        >+ Add</button>
+      </div>
+      {durations.length > 0 && (
+        <div className="flex gap-2 mt-2 pt-2 border-t border-indigo-200" onClick={e => e.stopPropagation()}>
+          <select
+            value={importId}
+            onChange={e => setImportId(e.target.value)}
+            className="border border-indigo-300 rounded px-3 py-2 text-sm flex-1 text-gray-600"
+          >
+            <option value="">Import total from duration...</option>
+            {durations.map(d => <option key={d._id} value={d._id}>{d.name}</option>)}
+          </select>
+          <button
+            onClick={() => importFromDuration(m.index)}
+            disabled={!importId}
+            className="border border-indigo-300 px-4 py-2 rounded text-sm hover:bg-indigo-100 disabled:opacity-40"
+          >Import</button>
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function Forecast() {
   const [settings, setSettings] = useState(null)
   const [durations, setDurations] = useState([])
@@ -81,6 +140,8 @@ export default function Forecast() {
     return acc
   }, [])
 
+  const panelProps = { durations, importId, setImportId, newVariableCost, setNewVariableCost, addVariableCost, removeVariableCost, importFromDuration }
+
   return (
     <div className="max-w-4xl mx-auto p-6">
       <Link to="/" className="text-sm text-gray-500 hover:text-gray-800 mb-6 inline-block">← Dashboard</Link>
@@ -129,7 +190,7 @@ export default function Forecast() {
 
       {/* Income + Account Balances */}
       <div className="border border-indigo-200 rounded-lg p-5 mb-8">
-        <div className="grid grid-cols-2 gap-4 mb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Monthly Income (NZD)</label>
             <input type="number" step="0.01" defaultValue={income}
@@ -152,7 +213,7 @@ export default function Forecast() {
               onBlur={e => saveSettings({ usdExchangeRate: parseFloat(e.target.value) || 1.65 })}
               className="border border-indigo-300 rounded px-2 py-1 text-xs w-20" />
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Second Bank Account (USD)</label>
               <input type="number" step="0.01" defaultValue={checkingBalance}
@@ -190,8 +251,8 @@ export default function Forecast() {
         <span className="text-gray-400">(± variable costs per month)</span>
       </div>
 
-      {/* Monthly running balance table */}
-      <div className="border border-indigo-200 rounded-lg overflow-x-auto">
+      {/* Desktop table — hidden below sm */}
+      <div className="hidden sm:block border border-indigo-200 rounded-lg overflow-x-auto">
         <table className="w-full text-sm min-w-[500px]">
           <thead className="bg-indigo-50 text-gray-500 uppercase text-xs tracking-wider">
             <tr>
@@ -224,46 +285,8 @@ export default function Forecast() {
                 </tr>
                 {expandedMonth === m.index && (
                   <tr>
-                    <td colSpan={4} className="px-4 pb-4 pt-2 bg-indigo-50">
-                      <div className="space-y-2 mb-3">
-                        {(m.variableCosts || []).map((c, i) => (
-                          <div key={i} className="flex justify-between items-center px-3 py-2 bg-white rounded border border-indigo-100">
-                            <span className="text-gray-700 text-sm">{c.name}</span>
-                            <div className="flex items-center gap-3">
-                              <span className={`font-medium text-sm ${c.amount < 0 ? 'text-green-600' : ''}`}>
-                                {c.amount < 0 ? '+' : ''}${Math.abs(c.amount).toFixed(2)}
-                              </span>
-                              <button onClick={e => { e.stopPropagation(); removeVariableCost(m.index, i) }} className="text-gray-400 hover:text-red-500 text-sm">✕</button>
-                            </div>
-                          </div>
-                        ))}
-                        {(m.variableCosts || []).length === 0 && <p className="text-sm text-gray-400">No variable costs yet.</p>}
-                      </div>
-                      <div className="flex gap-2" onClick={e => e.stopPropagation()}>
-                        <input placeholder="e.g. Haircut" value={newVariableCost.name}
-                          onChange={e => setNewVariableCost(p => ({ ...p, name: e.target.value }))}
-                          className="border border-indigo-300 rounded px-3 py-2 text-sm flex-1" />
-                        <input type="number" step="0.01" placeholder="Amount (− = income)" value={newVariableCost.amount}
-                          onChange={e => setNewVariableCost(p => ({ ...p, amount: e.target.value }))}
-                          className="border border-indigo-300 rounded px-3 py-2 text-sm w-28" />
-                        <button onClick={() => addVariableCost(m.index)}
-                          className="bg-indigo-600 text-white px-4 py-2 rounded text-sm hover:bg-indigo-700">
-                          + Add
-                        </button>
-                      </div>
-                      {durations.length > 0 && (
-                        <div className="flex gap-2 mt-2 pt-2 border-t border-indigo-200" onClick={e => e.stopPropagation()}>
-                          <select value={importId} onChange={e => setImportId(e.target.value)}
-                            className="border border-indigo-300 rounded px-3 py-2 text-sm flex-1 text-gray-600">
-                            <option value="">Import total from duration...</option>
-                            {durations.map(d => <option key={d._id} value={d._id}>{d.name}</option>)}
-                          </select>
-                          <button onClick={() => importFromDuration(m.index)} disabled={!importId}
-                            className="border border-indigo-300 px-4 py-2 rounded text-sm hover:bg-indigo-100 disabled:opacity-40">
-                            Import
-                          </button>
-                        </div>
-                      )}
+                    <td colSpan={4} className="p-0">
+                      <ExpandedPanel m={m} {...panelProps} />
                     </td>
                   </tr>
                 )}
@@ -271,6 +294,44 @@ export default function Forecast() {
             ))}
           </tbody>
         </table>
+      </div>
+
+      {/* Mobile cards — hidden at sm and above */}
+      <div className="sm:hidden border border-indigo-200 rounded-lg overflow-hidden divide-y divide-indigo-100">
+        {monthsWithBalance.map(m => (
+          <Fragment key={m.index}>
+            <div
+              className="px-4 py-3 cursor-pointer hover:bg-indigo-50"
+              onClick={() => setExpandedMonth(expandedMonth === m.index ? null : m.index)}
+            >
+              <div className="flex justify-between items-center mb-2">
+                <span className="font-medium text-gray-800">{m.label}</span>
+                <span className="text-gray-400 text-xs">{expandedMonth === m.index ? '▲' : '▼'}</span>
+              </div>
+              <div className="grid grid-cols-3 gap-2 text-xs">
+                <div>
+                  <div className="text-gray-400 uppercase tracking-wider mb-0.5">Variable</div>
+                  <span className={`font-medium ${m.variableCostsTotal < 0 ? 'text-green-600' : 'text-gray-700'}`}>
+                    {m.variableCostsTotal < 0 ? '+' : ''}${Math.abs(m.variableCostsTotal).toFixed(2)}
+                  </span>
+                </div>
+                <div>
+                  <div className="text-gray-400 uppercase tracking-wider mb-0.5">Net</div>
+                  <span className={`font-medium ${m.net >= 0 ? 'text-green-600' : 'text-red-500'}`}>
+                    {m.net >= 0 ? '+' : ''}${m.net.toFixed(2)}
+                  </span>
+                </div>
+                <div>
+                  <div className="text-gray-400 uppercase tracking-wider mb-0.5">Balance</div>
+                  <span className={`font-semibold ${m.balance >= 0 ? 'text-green-700' : 'text-red-600'}`}>
+                    ${m.balance.toFixed(2)}
+                  </span>
+                </div>
+              </div>
+            </div>
+            {expandedMonth === m.index && <ExpandedPanel m={m} {...panelProps} />}
+          </Fragment>
+        ))}
       </div>
     </div>
   )
