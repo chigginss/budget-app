@@ -10,7 +10,7 @@ export default function FocusList() {
   const load = () =>
     get('/lists?type=todo').then(lists => {
       if (lists.length) return get(`/lists/${lists[0]._id}`)
-      return post('/lists', { name: 'Focus List', type: 'todo' }).then(l => ({ ...l, items: [] }))
+      return post('/lists', { name: 'To-do List', type: 'todo' }).then(l => ({ ...l, items: [] }))
     }).then(setList).catch(console.error)
 
   useEffect(() => { load() }, [])
@@ -25,7 +25,7 @@ export default function FocusList() {
   return (
     <div className="max-w-2xl mx-auto p-6">
       <Link to="/" className="text-sm text-gray-500 hover:text-gray-800 mb-6 inline-block">← Dashboard</Link>
-      <h1 className="text-3xl font-bold mb-6 text-gray-900">Focus List</h1>
+      <h1 className="text-3xl font-bold mb-6 text-gray-900">To-do List</h1>
       <div className="flex gap-2 mb-6">
         <input
           value={newItem}

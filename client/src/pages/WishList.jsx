@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { get, post, put, del } from '../api/client'
+import { get, post } from '../api/client'
+import DragList from '../components/DragList'
 
 export default function WishList() {
   const [list, setList] = useState(null)
   const [newItem, setNewItem] = useState('')
-  const [draggedId, setDraggedId] = useState(null)
 
   const load = () =>
     get('/lists?type=toBuy').then(lists => {
@@ -20,24 +20,6 @@ export default function WishList() {
     await post(`/lists/${list._id}/items`, { name: newItem.trim() })
     setNewItem('')
     load()
-  }
-
-  const remove = async (id) => {
-    await del(`/items/${id}`)
-    load()
-  }
-
-  const handleDrop = async (targetId) => {
-    if (!draggedId || draggedId === targetId || !list) return
-    const items = [...(list.items || [])]
-    const fromIdx = items.findIndex(i => i._id === draggedId)
-    const toIdx = items.findIndex(i => i._id === targetId)
-    const [moved] = items.splice(fromIdx, 1)
-    items.splice(toIdx, 0, moved)
-    const withOrder = items.map((item, idx) => ({ ...item, order: idx }))
-    setList(prev => ({ ...prev, items: withOrder }))
-    setDraggedId(null)
-    await put(`/lists/${list._id}/reorder`, withOrder.map(({ _id, order }) => ({ id: _id, order })))
   }
 
   return (
@@ -56,19 +38,9 @@ export default function WishList() {
           Add
         </button>
       </div>
-      {list?.items?.map(item => (
-        <div
-          key={item._id}
-          draggable
-          onDragStart={() => setDraggedId(item._id)}
-          onDragOver={e => e.preventDefault()}
-          onDrop={() => handleDrop(item._id)}
-          className="flex items-center justify-between py-2 border-b border-indigo-100 last:border-0 cursor-grab active:cursor-grabbing"
-        >
-          <span className="text-gray-800">{item.name}</span>
-          <button onClick={() => remove(item._id)} className="text-xs text-red-400 hover:text-red-600">Delete</button>
-        </div>
-      ))}
+      {list && (
+        <DragList listId={list._id} items={list.items || []} onUpdate={load} />
+      )}
     </div>
   )
 }

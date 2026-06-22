@@ -13,7 +13,7 @@ const QUOTES = [
 const MAIN_PAGES = [
   { label: 'Ledger', path: '/ledger', description: 'Track your spending' },
   { label: 'Forecast', path: '/forecast', description: 'Project your savings' },
-  { label: 'Focus List', path: '/focus', description: 'Your top priorities' },
+  { label: 'To-do List', path: '/focus', description: 'Your top priorities' },
   { label: 'Wish List', path: '/wishlist', description: 'Things to buy' },
   { label: "What's Next", path: '/whats-next', description: 'Your custom lists' },
   { label: 'Blobs', path: '/blobs', description: 'Ideas & thoughts' },
