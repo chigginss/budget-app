@@ -96,7 +96,7 @@ export default function Blobs() {
                   <h3 className="font-semibold text-gray-900">{idea.title}</h3>
                   <div className="flex gap-3 shrink-0">
                     <button onClick={() => startEdit(idea)} className="text-xs text-gray-400 hover:text-gray-700">Edit</button>
-                    <button onClick={() => remove(idea._id)} className="text-xs text-gray-400 hover:text-red-500">Delete</button>
+                    <button onClick={() => remove(idea._id)} className="text-xs text-gray-400 hover:text-red-500">✕</button>
                   </div>
                 </div>
                 {idea.description && (

@@ -130,7 +130,7 @@ export default function ListPage() {
                 <button onClick={() => startEdit(item)}
                   className="text-xs text-indigo-500 hover:text-indigo-700">Edit</button>
                 <button onClick={() => remove(item._id)}
-                  className="text-xs text-red-400 hover:text-red-600">Delete</button>
+                  className="text-xs text-red-400 hover:text-red-600">✕</button>
               </div>
             </div>
           )}

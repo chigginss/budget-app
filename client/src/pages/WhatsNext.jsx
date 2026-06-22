@@ -55,7 +55,7 @@ export default function WhatsNext() {
               onClick={() => deleteList(list._id)}
               className="absolute top-2 right-2 text-xs text-red-500 hover:text-red-700"
             >
-              Delete
+              ✕
             </button>
           </div>
         ))}
