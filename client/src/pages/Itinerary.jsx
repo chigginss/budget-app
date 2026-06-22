@@ -553,11 +553,12 @@ export default function Itinerary() {
                     const isExpanded = expandedDay === dateStr
                     const dayActs = activitiesForDay(dateStr)
                     const dayTitle = titleForDay(dateStr)
+                    const dayDesc = descriptionForDay(dateStr)
                     return (
                       <div
                         key={dateStr}
                         onClick={() => isTrip && setExpandedDay(isExpanded ? null : dateStr)}
-                        className={`min-h-[96px] p-2 border-r border-indigo-50 last:border-0 ${
+                        className={`min-h-[128px] p-2 border-r border-indigo-50 last:border-0 ${
                           isTrip
                             ? `cursor-pointer ${isExpanded ? 'bg-indigo-100 ring-2 ring-inset ring-indigo-400' : 'hover:bg-indigo-50'}`
                             : 'bg-gray-50'
@@ -566,13 +567,16 @@ export default function Itinerary() {
                         <div className={`text-sm font-medium mb-1 ${isTrip ? 'text-gray-800' : 'text-gray-300'}`}>
                           {day.getUTCDate()}
                         </div>
+                        {isTrip && dayTitle && (
+                          <div className="text-xs text-indigo-700 font-medium truncate">{dayTitle}</div>
+                        )}
+                        {isTrip && dayDesc && (
+                          <div className="text-xs text-indigo-500 truncate mt-0.5">{dayDesc}</div>
+                        )}
                         {isTrip && dayActs.length > 0 && (
-                          <div className="text-xs text-indigo-500 mb-1">
+                          <div className="text-xs text-gray-400 mt-1">
                             {dayActs.length} {dayActs.length === 1 ? 'activity' : 'activities'}
                           </div>
-                        )}
-                        {isTrip && dayTitle && (
-                          <div className="text-xs text-indigo-700 truncate mt-1">{dayTitle}</div>
                         )}
                       </div>
                     )
@@ -604,6 +608,7 @@ export default function Itinerary() {
             const isExpanded = expandedDay === dateStr
             const dayActs = activitiesForDay(dateStr)
             const dayTitle = titleForDay(dateStr)
+            const dayDesc = descriptionForDay(dateStr)
             return (
               <div key={dateStr}>
                 <div
@@ -612,7 +617,8 @@ export default function Itinerary() {
                 >
                   <div>
                     <span className="font-medium text-sm text-gray-800">{formatShort(dateStr)}</span>
-                    {dayTitle && <p className="text-xs text-indigo-600 mt-0.5">{dayTitle}</p>}
+                    {dayTitle && <p className="text-xs text-indigo-700 font-medium mt-0.5">{dayTitle}</p>}
+                    {dayDesc && <p className="text-xs text-indigo-500 mt-0.5">{dayDesc}</p>}
                   </div>
                   <div className="flex items-center gap-2">
                     {dayActs.length > 0 && (
