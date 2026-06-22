@@ -148,7 +148,7 @@ function DayPanel({ dateStr, dayActivities, notes, title, description, onSaveDay
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-xs text-indigo-500 hover:underline mt-1 inline-block"
-                  >📍 View location</a>
+                  >{a.locationUrl.startsWith('https://www.google') ? '📍 View location' : '🔗 View more information'}</a>
                 )}
               </div>
             )}
