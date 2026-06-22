@@ -82,7 +82,7 @@ function DayPanel({ dateStr, dayActivities, notes, title, description, onSaveDay
           onClick={() => onSaveDaySummary(dateStr, { title: localTitle, description: localDescription, notes: localNotes })}
           className="bg-indigo-600 text-white px-3 py-1 rounded text-xs hover:bg-indigo-700"
         >
-          Save summary
+          Save day summary
         </button>
       </div>
 
@@ -572,7 +572,7 @@ export default function Itinerary() {
                           </div>
                         )}
                         {isTrip && dayTitle && (
-                          <div className="text-xs text-indigo-700 truncate">{dayTitle}</div>
+                          <div className="text-xs text-indigo-700 truncate mt-1">{dayTitle}</div>
                         )}
                       </div>
                     )
